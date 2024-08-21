@@ -8,6 +8,12 @@ router.post('/Signup', Security.Signup);
 router.post('/Signin', Security.Signin);
 router.post('/Signoff', Destroy);
 
+//olvidar contraseña
+router.post('/ForgotPassword', Security.ForgotPassword);
+
+// para restablecerlo
+router.post('/ResetPassword', Security.ResetPassword);
+
 
 module.exports = (app, nextMain) => {
     app.use('/intosai/security', router);

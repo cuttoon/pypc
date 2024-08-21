@@ -20,12 +20,12 @@ module.exports = {
                 
             
         };
-        const participante = await db.manyExecute(`INSERT INTO SCAI.SCAI_PARTICIPANTE(nnte_reportid, nnte_ambitoid, nnte_paisid, cnte_entidad, nnte_otroid, nnte_rolid, nnte_tipoentidadid) 
+        const participante = await db.manyExecute(`INSERT INTO SCAI_PARTICIPANTE(nnte_reportid, nnte_ambitoid, nnte_paisid, cnte_entidad, nnte_otroid, nnte_rolid, nnte_tipoentidadid) 
         VALUES (:nnte_reportid,:nnte_ambitoid,:nnte_paisid,:cnte_entidad,:nnte_otroid,:nnte_rolid, :nnte_tipoentidadid) RETURNING nnte_id INTO :ids`, data, options);
         return participante;
     },
     deleteParticipante: async(ids) => {
-        const result = await db.simpleExecute(`DELETE FROM SCAI.SCAI_PARTICIPANTE WHERE nnte_reportid= :ids `, [ids]);        
+        const result = await db.simpleExecute(`DELETE FROM SCAI_PARTICIPANTE WHERE nnte_reportid= :ids `, [ids]);        
         return result;
     }
     ,

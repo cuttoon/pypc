@@ -44,7 +44,7 @@ const parseParticipante = (data, report) => {
 module.exports = {
     getallAuditoria: async() => {
         const data = { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }};
-        const cursor = await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_AUDITORIA(:cursor); END;`, data);
+        const cursor = await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_AUDITORIA(:cursor); END;`, data);
         return cursor.cursor;
     },
     getMore: async(data) => {
@@ -52,19 +52,19 @@ module.exports = {
         data.cursor_o = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
         data.cursor_p = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };    
         data.cursor_i = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };    
-        const events = await db.procedureExecuteCursorsArray(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GET_DETALLE_AUDITORIA(:auditoria_id,:cursor_a,:cursor_o,:cursor_p,:cursor_i); END;`, data);
+        const events = await db.procedureExecuteCursorsArray(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GET_DETALLE_AUDITORIA(:auditoria_id,:cursor_a,:cursor_o,:cursor_p,:cursor_i); END;`, data);
         return { auditoria: events.cursor_a, ods: events.cursor_o, participante: events.cursor_p, informe: events.cursor_i };
     },
     getSimpleSearch: async(data) => {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
-        const cursor = await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GET_AUDITORIA_GENERAL(:buscar,:cursor); END;`, data);
+        const cursor = await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GET_AUDITORIA_GENERAL(:buscar,:cursor); END;`, data);
         return cursor.cursor;
     },
     getAdvanceSearch: async(data) => {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };       
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GET_AUDITORIA_ADVANCE(:idiomas,:ambito,:pais,:inicio,:fin,:tipo,:categoria,:ods,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GET_AUDITORIA_ADVANCE(:idiomas,:ambito,:pais,:inicio,:fin,:tipo,:categoria,:ods,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
 
@@ -73,7 +73,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_POLAR_GRAPH(:mes,:categoria,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_POLAR_GRAPH(:mes,:categoria,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getDateGraph: async(data) => {
@@ -81,7 +81,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_DATE_GRAPH(:ambito,:categoria,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_DATE_GRAPH(:ambito,:categoria,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getCategoriesGraph: async(data) => {
@@ -89,7 +89,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_CATEGORIES_GRAPH(:ambito,:mes,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_CATEGORIES_GRAPH(:ambito,:mes,:ods,:tipo,:pais,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getOdsGraph: async(data) => {
@@ -97,7 +97,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_ODS_GRAPH(:ambito,:mes,:categoria,:tipo,:pais,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_ODS_GRAPH(:ambito,:mes,:categoria,:tipo,:pais,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getTypeReportGraph: async(data) => {
@@ -105,7 +105,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_TYPE_REPORT_GRAPH(:ambito,:mes,:categoria,:ods,:pais,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_TYPE_REPORT_GRAPH(:ambito,:mes,:categoria,:ods,:pais,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getCountryGraph: async(data) => {
@@ -113,7 +113,7 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_COUNTRY_GRAPH(:ambito,:mes,:categoria,:tipo,:ods,:anio,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_COUNTRY_GRAPH(:ambito,:mes,:categoria,:tipo,:ods,:anio,:cursor); END;`, data);
         return cursor.cursor;
     },
     getauditlist: async(data) => {
@@ -121,20 +121,20 @@ module.exports = {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
   
 
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_AUDIT_LIST(:usuario,:estado,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_AUDIT_LIST(:usuario,:estado,:cursor); END;`, data);
         return cursor.cursor;
     },
     getlistreasons: async(data) => {
     
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
     
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_LIST_OF_REASONS(:ids,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_LIST_OF_REASONS(:ids,:cursor); END;`, data);
         return cursor.cursor;
     },
     getlistusers: async(data) => {
         data.cursor= { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
     
-        const cursor =  await db.procedureExecuteCursor(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_LIST_USERS(:ids,:cursor); END;`, data);
+        const cursor =  await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_LIST_USERS(:ids,:cursor); END;`, data);
         return cursor.cursor;
     },
     getTags: async() => {
@@ -167,7 +167,7 @@ module.exports = {
                 ids: { type: oracledb.NUMBER , dir: oracledb.BIND_OUT }
             }
         };
-        const observation = await db.manyExecute(`INSERT INTO SCAI.SCAI_OBSERVACION(NOBS_REPORTID, COBS_MOTIVO)
+        const observation = await db.manyExecute(`INSERT INTO SCAI_OBSERVACION(NOBS_REPORTID, COBS_MOTIVO)
          VALUES (:report_id,:motivo) RETURNING NOBS_ID INTO :ids `, element, options);
 
         return observation;
@@ -186,13 +186,13 @@ module.exports = {
         //data.cursor_p = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
         data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT ,val:data.ids};
          
-        const events = await db.procedureExecute(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_UPDATE_STATUS(:ids,:status,:usuario); END;`, data);
+        const events = await db.procedureExecute(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_UPDATE_STATUS(:ids,:status,:usuario); END;`, data);
         return events.ids;    
     },
     getParticipants: async(data) => {
         data.cursor_p = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
          
-        const events = await db.procedureExecuteCursorsArray(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GET_PARTICIPANTES(:auditoria_id,:cursor_p); END;`, data);
+        const events = await db.procedureExecuteCursorsArray(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GET_PARTICIPANTES(:auditoria_id,:cursor_p); END;`, data);
         return {  participante: events.cursor_p};
     },
     createClasification: async(data)=> {
@@ -216,7 +216,7 @@ module.exports = {
     getClasification: async(data) => {
         data.cursor_o = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }; 
         data.cursor_t = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };    
-        const events = await db.procedureExecuteCursorsArray(`BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GET_CLASIFICACIONES(:auditoria_id,:cursor_o,:cursor_t); END;`, data);
+        const events = await db.procedureExecuteCursorsArray(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GET_CLASIFICACIONES(:auditoria_id,:cursor_o,:cursor_t); END;`, data);
         return { ods: events.cursor_o, tag: events.cursor_t};
     },
     
@@ -228,7 +228,7 @@ module.exports = {
             data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT, val: parseInt(data.ids) };
 
 
-        const newEvent = await db.procedureExecute(`BEGIN SCAI.PG_SCAI_CONSULTA.PAI_SCAI_INSERT_REPORT(
+        const newEvent = await db.procedureExecute(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
             :publicacion,
             :idioma,
             :ids,
@@ -250,7 +250,7 @@ module.exports = {
             data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT, val: parseInt(data.ids) };
 
 
-    const practica = await db.procedureExecute(`BEGIN SCAI.PG_SCAI_CONSULTA.PAI_SCAI_INSERT_PRACTICE(
+    const practica = await db.procedureExecute(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_PRACTICE(
         :argumento,
         :detalle,
         :estado,
@@ -263,7 +263,7 @@ module.exports = {
     },
     createAuditoria: async(data) => {
         data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
-        const newEvent = await db.procedureExecute(`BEGIN SCAI.PG_SCAI_CONSULTA.PAI_SCAI_INSERT_AUDITORIA(
+        const newEvent = await db.procedureExecute(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_AUDITORIA(
             :categoria,
             :ffin,
             :fini,
@@ -280,7 +280,7 @@ module.exports = {
 
     updateAuditoria: async(data) => {
         data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT ,val:data.ids};
-        const newEvent = await db.procedureExecute(`BEGIN SCAI.PG_SCAI_CONSULTA.PAI_SCAI_UPDATE_AUDITORIA(
+        const newEvent = await db.procedureExecute(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_UPDATE_AUDITORIA(
             :categoria,
             :ffin,
             :fini,

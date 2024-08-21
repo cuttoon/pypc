@@ -18,6 +18,9 @@ const validateObj = (validate, data) => {
     const error = {};
     const fields = Object.keys(data);
 
+    // Regex para la validacion de la contraseña
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/;
+
     Object.keys(validate).forEach(ele => {
         if (!fields.includes(ele) || !data[ele]) {
             if(!isNaN(data[ele]) ){
@@ -46,6 +49,12 @@ const validateObj = (validate, data) => {
 
             if (ele === 'correo' && !validator.validate(data[ele])) {
                 error[ele] = [`This field must be format email`];
+            }
+
+            if (ele === 'clave' && !passwordRegex.test(data[ele])) {
+                error[ele] = [
+                    'Password must contain at least 8 characters, including letters and numbers.'
+                ];
             }
 
             if (validate[ele] !== typeof data[ele]) {

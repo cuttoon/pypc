@@ -13,7 +13,7 @@ module.exports = {
       },
     };
     const ods = await db.manyExecute(
-      `INSERT INTO SCAI.SCAI_AUDITORIA_ODS(naod_odsid,naod_reportid) 
+      `INSERT INTO SCAI_AUDITORIA_ODS(naod_odsid,naod_reportid) 
         VALUES (:ods_id,:report_id) RETURNING naod_id INTO :ids`,
       data,
       options
@@ -22,7 +22,7 @@ module.exports = {
   },
   deleteOds: async (ids) => {
     const result = await db.simpleExecute(
-      `DELETE FROM SCAI.SCAI_AUDITORIA_ODS WHERE naod_reportid= :ids `,
+      `DELETE FROM SCAI_AUDITORIA_ODS WHERE naod_reportid= :ids `,
       [ids]
     );
     return result;

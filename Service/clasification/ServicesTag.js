@@ -13,7 +13,7 @@ module.exports = {
       },
     };
     const tag = await db.manyExecute(
-      `INSERT INTO SCAI.SCAI_AUDITORIA_TAG(nata_tagid,nata_reportid) 
+      `INSERT INTO SCAI_AUDITORIA_TAG(nata_tagid,nata_reportid) 
     VALUES (:tag_id,:report_id) RETURNING nata_id INTO :ids`,
       data,
       options
@@ -22,16 +22,16 @@ module.exports = {
   },
   deleteTag: async (ids) => {
     const result = await db.simpleExecute(
-      `DELETE FROM SCAI.SCAI_AUDITORIA_TAG WHERE nata_reportid= :ids `,
+      `DELETE FROM SCAI_AUDITORIA_TAG WHERE nata_reportid= :ids `,
       [ids]
     );
     return result;
   },
   getTag: async (req) => {
     const cursor = await db.procedureExecuteCursor(
-      `BEGIN SCAI.PG_SCAI_CONSULTA.PA_SCAI_GENERIC_SELECT_EXECUTE(:sql_stmt,:cursor); END;`,
+      `BEGIN PG_SCAI_CONSULTA.PA_SCAI_GENERIC_SELECT_EXECUTE(:sql_stmt,:cursor); END;`,
       {
-        sql_stmt: `SELECT ntag_id, ctag_name, ctag_normalized  AS DESCRIPTION FROM SCAI.SCAI_TAG ORDER BY ntag_id `,
+        sql_stmt: `SELECT ntag_id, ctag_name, ctag_normalized  AS DESCRIPTION FROM SCAI_TAG ORDER BY ntag_id `,
         cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
       }
     );
@@ -56,7 +56,7 @@ module.exports = {
       },
     };
     const tag = await db.manyExecute(
-      `INSERT INTO SCAI.SCAI_TAG(ctag_name, ctag_normalized)
+      `INSERT INTO SCAI_TAG(ctag_name, ctag_normalized)
      VALUES (:nombre,:normalizado) RETURNING ntag_id INTO :ids `,
       element,
       options

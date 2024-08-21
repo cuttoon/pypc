@@ -3,17 +3,18 @@ const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
 
 
-TokenSignup  =  function(payload,secret,expiration){
- let _Token;
- _Token = jwt.sign(payload, secret, { expiresIn:  expiration }); 
- myCache.set(payload.id, _Token)
-  return  _Token;
+TokenSignup = function(payload, secret, expiration) {
+  let _Token = jwt.sign(payload, secret, { expiresIn: expiration });
+  myCache.set(payload.id, _Token);  // Almacenar el token usando userId
+  console.log("Storing token in cache:", payload.id, _Token);
+  return _Token;  // Asegúrate de retornar el JWT correctamente
 }
 
-ExisToken = function(value){
+ExisToken = function(userId){
     let bStatus =false;
    try{
-    let data=  myCache.get(value);
+    let data=  myCache.get(userId);
+    console.log("Checking token in cache:", userId, data);
     if(data){
         bStatus=true
     }
