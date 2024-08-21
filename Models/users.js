@@ -14,54 +14,58 @@ const user = {
     ids:'number'
 };
 
+// Regex para la validación de la contraseña
+const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,30}$/;
+
+const validatePassword = (password) => {
+    if (!password || !passwordRegex.test(password)) {
+        throw new Error('Password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters. It cannot be empty.');
+    }
+};
+
 const validateObj = (validate, data) => {
     const error = {};
     const fields = Object.keys(data);
 
-    // Regex para la validacion de la contraseña
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/;
-
     Object.keys(validate).forEach(ele => {
         if (!fields.includes(ele) || !data[ele]) {
-            if(!isNaN(data[ele]) ){
-                if(ele=="clave" && data["ids"]==undefined){
+            if (!isNaN(data[ele])) {
+                if (ele == "clave" && data["ids"] == undefined) {
                     error[ele] = ['This field may not be blank.'];
-                }else if (data[ele]?.lenght === 0 || data[ele]=='') {
-                    error[ele] = ['This field may not be blank.'];                 
+                } else if (data[ele]?.length === 0 || data[ele] == '') {
+                    error[ele] = ['This field may not be blank.'];
                 }
             }
-
         } else if (Array.isArray(validate[ele])) {
-            if (data[ele]?.lenght === 0 || data[ele]=='') {
-                error[ele] = ['This field may not be blank.'];                 
-            } else if (!validate[ele].includes(typeof data[ele])) {                
+            if (data[ele]?.length === 0 || data[ele] == '') {
+                error[ele] = ['This field may not be blank.'];
+            } else if (!validate[ele].includes(typeof data[ele])) {
                 error[ele] = [`This field must be an ${validate[ele][0]} or null`];
             }
         } else {
-            
             if (ele === 'sexo' && !["M", "F"].includes(data[ele])) {
                 error[ele] = [`This field must be 'M' or 'F' .`];
-            } 
-            
+            }
+
             if (ele === 'rol' && ![1, 2, 3].includes(data[ele])) {
-                error[ele] = [`This field must be 1 ,2 or 3`];
-            } 
+                error[ele] = [`This field must be 1, 2, or 3`];
+            }
 
             if (ele === 'correo' && !validator.validate(data[ele])) {
-                error[ele] = [`This field must be format email`];
+                error[ele] = [`This field must be in email format`];
             }
 
             if (ele === 'clave' && !passwordRegex.test(data[ele])) {
                 error[ele] = [
-                    'Password must contain at least 8 characters, including letters and numbers.'
+                    'Password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.'
                 ];
             }
 
             if (validate[ele] !== typeof data[ele]) {
-                error[ele] = [`This field must be an ${validate[ele]}`];
-            }           
+                error[ele] = [`This field must be a ${validate[ele]}`];
+            }
         }
-    }); 
+    });
     return error;
 };
 
@@ -92,4 +96,7 @@ const validateUser = (data) => {
     }
 };
 
-module.exports = validateUser;
+module.exports = {
+    validateUser,
+    validatePassword
+};

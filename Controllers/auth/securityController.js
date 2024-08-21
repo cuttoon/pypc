@@ -2,7 +2,7 @@ const userdb = require("../../Service/authService/Serviceaccount");
 const userdbUser = require("../../Service/authService/Serviceusers");
 const { secret } = require("../../Settings/Enviroment/config");
 const bcrypt = require("bcrypt");
-const { validateUser } = require("../../Models");
+const { validateUser, validatePassword } = require("../../Models/users");
 const { existEmail } = require("../common");
 const jwt = require("jsonwebtoken");
 const {
@@ -65,27 +65,22 @@ module.exports = {
   ResetPassword: async (req, res, next) => {
     try {
       const { token, newPassword } = req.body;
-      console.log("Token received:", token);
 
-      // Extraer el userId del token
+      validatePassword(newPassword);
+
       const decodedToken = jwt.verify(token, secret);
-      console.log("Decoded Token:", decodedToken);
       const userId = decodedToken.id;
 
-      // Verificar el token y obtener el ID del usuario asociado
       if (!ExisToken(userId)) {
-        // Usa userId en lugar de token
         return res.status(400).json({ message: "Invalid or expired token :D" });
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 20);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      // Llamar al procedimiento para resetear la contraseña
       await resetPass(userId, hashedPassword);
       
 
-      // Destruir el token después de su uso
-      TokenDestroy(userId); // Usa userId para destruir el token
+      TokenDestroy(userId);
 
       res
         .status(200)
@@ -98,7 +93,6 @@ module.exports = {
     try {
       const { email } = req.body;
 
-      // Buscar al usuario por correo electrónico
       const user = await userdb.getUserbyEmail(email);
       if (!user) {
         const error = new Error("Email does not exist.");
@@ -106,17 +100,14 @@ module.exports = {
         throw error;
       }
 
-      // checar el await para las funciones asincronas
       const userId = await forgotPass(email);
         if (userId.error) {
             throw new Error(userId.error);
         }
 
-        // Generar el token usando el userId
         const token = TokenSignup({ id: userId }, secret, '1h'); 
         
 
-      // Enviar un email al usuario con el enlace para restablecer la contraseña
       const resetLink = `${req.headers.origin}/reset-password?token=${token}`;
       /* await sendEmail({
         to: user.CUSU_EMAIL,
