@@ -21,7 +21,7 @@ module.exports = {
       if (email == null && password == null) {
         return res
           .status(400)
-          .send({ statusCode: 400, message: "Datos imcompletos" });
+          .send({ statusCode: 400, message: "Incomplete data" });
       } else {
         let datavalidEmail = await userdb.getUserbyEmail(email);
 
@@ -41,7 +41,7 @@ module.exports = {
         } else {
           return res
             .status(401)
-            .send({ statusCode: 400, message: "Datos inconsistente" });
+            .send({ statusCode: 400, message: "Inconsistent data" });
         }
       }
     } catch (ex) {

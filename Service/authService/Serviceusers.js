@@ -30,7 +30,6 @@ module.exports = {
             :ids,
             :nombre,
             :pais,
-            :clave,
             :rol
             ); END;`, data); 
         return newEvent.ids;    
