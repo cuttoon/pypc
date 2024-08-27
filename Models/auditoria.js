@@ -11,7 +11,6 @@ const auditoria = {
     categoria: 'number',
     fini: 'string',
     ffin: 'string',
-    imagen: 'string',
     ids:'number'
     
 };

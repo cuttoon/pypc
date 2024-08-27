@@ -4,13 +4,13 @@ const CustomError = require('../../Service/errors');
 
 const { deleteFiles, filesAssingBody, materialsAssingBody,reportsAssingBody} = require('./common');
 
-const media = upload.fields([{ name: 'imagen', maxCount: 1 }]);
+const media = upload.fields([]);
 
-const checkFiles = (req, resp, next)=> { 
+const checkFiles = (req, resp, next) => { 
     media(req, resp, function(err) {
         const files = JSON.parse(JSON.stringify(req.files)); 
         const reqBody = JSON.parse(JSON.stringify(req.body));
-        
+
         if (err) {
             deleteFiles(files); 
             if (err instanceof CustomError) {                
@@ -20,14 +20,9 @@ const checkFiles = (req, resp, next)=> {
                 return next(new CustomError({ code: err.code, field: err.field, error: err.message }, 400));           
             }
         } else {
-            if (Object.keys(files).length <= 1) {   
-               //(deleteFiles(files);
-                req.body = filesAssingBody(files, reqBody); 
-                return next();
-            } else {
-                req.body = filesAssingBody(files, reqBody);   
-                return next();         
-            }
+            // Si no esperas archivos, simplemente asigna el cuerpo de la solicitud
+            req.body = { ...reqBody };
+            return next();
         }
     });
 };

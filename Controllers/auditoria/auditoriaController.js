@@ -252,19 +252,25 @@ module.exports = {
     },
     createauditoria: async(req, resp, next) => {
         try { 
+            console.log('recibiendo datos: ', req.body);
 
             req.body.ids = req.body.ids== undefined || parseInt(req.body.ids) == 0 ?0:parseInt(req.body.ids);
 
             req.body.categoria = parseInt(req.body.categoria);
             req.body.tipo = parseInt(req.body.tipo);
             
-            req.body.fini = moment(req.body.fini).toDate();
-            req.body.ffin =moment(req.body.ffin).toDate();
+            // req.body.fini = moment(req.body.fini).toDate();
+            req.body.fini = moment(req.body.fini, 'DD-MM-YYYY', true).isValid() ? moment(req.body.fini, 'DD-MM-YYYY').toDate() : null;
+            req.body.ffin = moment(req.body.ffin, 'DD-MM-YYYY', true).isValid() ? moment(req.body.ffin, 'DD-MM-YYYY').toDate() : null;
+            // req.body.ffin =moment(req.body.ffin).toDate();
+
+            if (!req.body.fini || !req.body.ffin) {
+                console.log('Fechas invalidas')
+                return resp.status(400).send({ statusCode: 400, message: "Fecha inválida, por favor use el formato DD-MM-YYYY." });
+            }
             req.body.usuario= req.body.usuario;
 
-            if (req.body.ids == 0 && (req.files.imagen==undefined ) ) {
-                return next(400);
-            }
+            
 
             validateAuditoria(req.body);    
             
@@ -280,6 +286,7 @@ module.exports = {
             
             resp.send({ result });
         } catch (err) {
+            console.log('Error al crear la auditoria', err.message)
             if (err instanceof CustomError) {
                 return next(err);  
             }

@@ -30,7 +30,7 @@ module.exports = {
             id: datavalidEmail.NUSU_ID,
             rol: datavalidEmail.NUSU_ROLID,
           };
-          const token = TokenSignup(payload, secret, "12h");
+          const token = TokenSignup(payload, secret, "1h");
 
           return res.status(200).send({
             IdCuenta: datavalidEmail.NUSU_ID,
