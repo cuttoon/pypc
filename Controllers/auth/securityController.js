@@ -79,7 +79,6 @@ module.exports = {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       await resetPass(userId, hashedPassword);
-      
 
       TokenDestroy(userId);
 
@@ -100,23 +99,18 @@ module.exports = {
         error.status = 404;
         throw error;
       }
+      const userId = user.NUSU_ID; // Asegúrate de que 'user.id' sea un número o string
+
       // Genera un token para el usuario
-      const userId = await userdb.getUserbyEmail(email);
-      if (userId.error) {
-        throw new Error(userId.error);
+      if (!userId) {
+        throw new Error("User ID not found.");
       }
 
-      const token = TokenSignup({ id: userId }, secret, '1h'); 
-      
-      console.log('headers', req.headers)
+      const token = TokenSignup({ id: userId }, secret, "1h");
+
 
       // Crea el enlace de restablecimiento
-      const resetLink = `${req.headers.origin}/reset-password?token=${token}`;
-      console.log(typeof resetLink)
-
-      if (typeof resetLink !== 'string') {
-        throw new Error('resetLink must be a string.');
-      }
+      const resetLink = `http://127.0.0.1:9090/reset-password?${token}`;
 
       // Llama al servicio para enviar el correo electrónico
       const result = await forgotPass(email, resetLink);
@@ -125,14 +119,14 @@ module.exports = {
       }
 
       res.status(200).json({
-        message: result.success || 'Password reset email sent successfully.'
+        message: result.success || "Password reset email sent successfully.",
       });
       /* res
         .status(200)
         .json({ message: "Password reset link has been sent to your email." }); */
     } catch (error) {
-      console.error('Error in ForgotPassword controller:', error); // Agregar depuración
-    next(error);
+      console.error("Error in ForgotPassword controller:", error); // Agregar depuración
+      next(error);
     }
   },
 };
