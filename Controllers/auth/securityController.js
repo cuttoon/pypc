@@ -14,6 +14,7 @@ const {
   forgotPass,
   resetPass,
 } = require("../../Service/authService/ResetPassword");
+
 module.exports = {
   Signin: async (req, res) => {
     try {
@@ -99,33 +100,39 @@ module.exports = {
         error.status = 404;
         throw error;
       }
+      // Genera un token para el usuario
+      const userId = await userdb.getUserbyEmail(email);
+      if (userId.error) {
+        throw new Error(userId.error);
+      }
 
-      const userId = await forgotPass(email);
-        if (userId.error) {
-            throw new Error(userId.error);
-        }
+      const token = TokenSignup({ id: userId }, secret, '1h'); 
+      
+      console.log('headers', req.headers)
 
-        const token = TokenSignup({ id: userId }, secret, '1h'); 
-        
-
+      // Crea el enlace de restablecimiento
       const resetLink = `${req.headers.origin}/reset-password?token=${token}`;
-      /* await sendEmail({
-        to: user.CUSU_EMAIL,
-        subject: "Reset your password",
-        html: `<p>Click <a href="${resetLink}">here</a> to reset your password. -> Ejemplo</p>`,
-      }); */
+      console.log(typeof resetLink)
+
+      if (typeof resetLink !== 'string') {
+        throw new Error('resetLink must be a string.');
+      }
+
+      // Llama al servicio para enviar el correo electrónico
+      const result = await forgotPass(email, resetLink);
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
       res.status(200).json({
-        message: "Token generated successfully",
-        token: token,
-        resetLink: resetLink,
+        message: result.success || 'Password reset email sent successfully.'
       });
-
       /* res
         .status(200)
         .json({ message: "Password reset link has been sent to your email." }); */
     } catch (error) {
-      next(error);
+      console.error('Error in ForgotPassword controller:', error); // Agregar depuración
+    next(error);
     }
   },
 };
