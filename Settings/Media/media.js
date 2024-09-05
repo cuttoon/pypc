@@ -4,10 +4,12 @@ const CustomError = require('../../Service/errors');
 
 const { deleteFiles, filesAssingBody, materialsAssingBody,reportsAssingBody} = require('./common');
 
-const media = upload.fields([]);
+const media = upload.fields([{ name: 'imagen', maxCount: 1 }]);
 
 const checkFiles = (req, resp, next) => { 
     media(req, resp, function(err) {
+        console.log('Files checkFiles:', req.files);  // <-- Añadir esto
+        console.log('Body checkFiles:', req.body);    // <-- Y esto también
         const files = JSON.parse(JSON.stringify(req.files)); 
         const reqBody = JSON.parse(JSON.stringify(req.body));
 
