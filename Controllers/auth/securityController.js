@@ -54,15 +54,33 @@ module.exports = {
   Signup: async (req, res) => {
     try {
       const newUser = validateUser(req.body);
-
+  
       if (await existEmail(req.body.correo)) {
-        throw new CustomError({ correo: ["email already exists"] }, 400);
+        return res.status(400).send({ message: "Email already exists" });
       }
 
       let result = await userdbUser.createUser(newUser);
-      res.send({ result });
+  
+      const token = TokenSignup({ id: result }, secret, "1h");
+  
+      const resetLink = `http://127.0.0.1:9090/reset-password`;
+  
+      const emailResult = await sendEmail(
+        req.body.correo,
+        "Set Your Password",
+        "Please click the link below to set your password.",
+        `<p>Please click the link below to set your password:</p><p><a href="${resetLink}">Click aqui</a></p>`
+      );
+  
+      if (emailResult.error) {
+        throw new Error(emailResult.error);
+      }
+      res.status(200).json({
+        message: "User created successfully, please check your email to set your password.",
+        token: token
+      });
     } catch (ex) {
-      return res.status(500).send({ statusCode: 500, message: ex.message });
+      return res.status(500).send({ message: ex.message });
     }
   },
   ResetPassword: async (req, res, next) => {
@@ -103,24 +121,20 @@ module.exports = {
         throw error;
       }
   
-      const userId = user.NUSU_ID; // Asegúrate de que 'user.NUSU_ID' sea correcto
+      const userId = user.NUSU_ID;
   
-      // Genera un token para el usuario
       if (!userId) {
         throw new Error("User ID not found.");
       }
   
       const token = TokenSignup({ id: userId }, secret, "1h");
   
-      // Crea el enlace de restablecimiento
       const resetLink = `http://127.0.0.1:9090/reset-password`;
   
-      // Define el asunto y el contenido del correo
       const subject = "Password Reset Request";
       const text = `To reset your password, click the following link: ${resetLink}`;
       const html = `<p>To reset your password, click the following link:</p><p><a href="${resetLink}">Reset Password</a></p>`;
   
-      // Llama al servicio para enviar el correo electrónico utilizando el procedure
       const result = await sendEmail(email, subject, text, html);
   
       if (result.error) {
@@ -129,6 +143,7 @@ module.exports = {
   
       res.status(200).json({
         message: result.success || "Password reset email sent successfully.",
+        token: token
       });
     } catch (error) {
       console.error("Error in ForgotPassword controller:", error);
