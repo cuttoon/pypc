@@ -29,8 +29,7 @@ module.exports = {
             :sexo,
             :ids,
             :nombre,
-            :pais,
-            :rol
+            :pais
             ); END;`, data); 
         return newEvent.ids;    
     },

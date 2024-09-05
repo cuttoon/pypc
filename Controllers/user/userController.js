@@ -1,5 +1,5 @@
 const userdb   = require('../../Service/authService/Serviceusers')
-const { validateUser } = require('../../Models');
+const { validateUser } = require('../../Models/users');
 const CustomError = require('../../Service/errors');
 const { existEmail,existEmailUpdate } = require('../common');
 
@@ -34,6 +34,7 @@ module.exports = {
 
     updateUser: async(req, resp, next) => {
         try {
+            console.log(req.body)
             const updateUser = validateUser(req.body);
 
             if(await existEmailUpdate(req.body.ids)){
