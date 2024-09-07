@@ -18,14 +18,18 @@ const parseOds = (data, report) => {
 
 const parseTag = (data, report) => {
     return data.map(ele => {
-        ele.report_id = report;
-        ele.tag_id = ele.tag_id ? parseInt(ele.tag_id) : ele.tag_id;
+        console.log("ele", ele)
+        ele.report_id = report; // Asignamos el report_id al tag
+        ele.tag_id = ele.tag_id ? parseInt(ele.tag_id) : undefined; // Si no existe tag_id, lo dejamos undefined
+        ele.nombre = ele.nombre ? ele.nombre : ''; // Aseguramos que siempre exista un nombre
         return ele;
     });
 };
 
+
 const parseParticipante = (data, report) => {
     return data.map(ele => {
+        console.log("ele", ele)
         ele.report_id = report;
         ele.ambito_id = ele.ambito_id ? parseInt(ele.ambito_id) : ele.ambito_id;
         ele.entidad = ele.entidad ? ele.entidad.toString() : ele.entidad;
@@ -174,8 +178,10 @@ module.exports = {
     }, 
     createParticipants: async(data)=> {
         let _participante = await deleteParticipante(data.report_id);
+        console.log("data participante", data.participante)
         const participante_ = await createParticipante(parseParticipante(data.participante,data.report_id));
 
+        console.log(participante_)
         const result = {
             participante: participante_
         };
@@ -196,21 +202,22 @@ module.exports = {
         return {  participante: events.cursor_p};
     },
     createClasification: async(data)=> {
-        let _ods = await deleteOds(data.report_id);
+        // let _ods = await deleteOds(data.report_id);
         const ods_ = await createOds(parseOds(data.ods,data.report_id));
 
 
-        /* let _tag = await deleteTag(data.report_id);
-        const tag_ = await createTag(parseTag(data.tag,data.report_id)); */
-
-        /* const result = {
-            ods: ods_,
-            tag: tag_
-        }; */
+        console.log("el data.report_id", data.report_id)
+        //let _tag = await deleteTag(data.report_id);
+        const tag_ = await createTag(parseTag(data.tag,data.report_id));
 
         const result = {
-            ods: ods_
+            ods: ods_,
+            tag: tag_
         };
+
+        /* const result = {
+            ods: ods_
+        }; */
         return result;
     },
     getClasification: async(data) => {
