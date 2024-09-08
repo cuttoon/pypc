@@ -36,21 +36,36 @@ const parseTag = (data, report) => {
 };
 
 const parseParticipante = (data, report) => {
-  return data.map((ele) => {
-    console.log("ele", ele);
-    ele.report_id = report;
-    ele.ambito_id = ele.ambito_id ? parseInt(ele.ambito_id) : ele.ambito_id;
-    ele.entidad = ele.entidad ? ele.entidad.toString() : ele.entidad;
-    ele.otro_id = ele.otro_id ? parseInt(ele.otro_id) : ele.otro_id;
-    ele.pais_id = ele.pais_id ? parseInt(ele.pais_id) : ele.pais_id;
-    ele.rol_id = ele.rol_id ? parseInt(ele.rol_id) : ele.rol_id;
-    ele.tipo_id = ele.tipo_id ? parseInt(ele.tipo_id) : ele.tipo_id;
-    //ele.participante_id = ele.participante_id ? parseInt(ele.participante_id) : ele.participante_id;
-    //ele.organizacion_count = ele.organizacion_count ? parseInt(ele.organizacion_count) : ele.organizacion_count;
-    //ele.pais_count = ele.pais_count ? parseInt(ele.pais_count) : ele.pais_count;
-    return ele;
-  });
-};
+    return data.flatMap((ele) => {
+  
+      const ambito_id = ele.ambito_id ? parseInt(ele.ambito_id) : null;
+      const otro_id = ele.otro_id ? parseInt(ele.otro_id) : null;
+      const rol_id = ele.rol_id ? parseInt(ele.rol_id) : null;
+      const tipo_id = ele.tipo_id ? parseInt(ele.tipo_id) : null;
+  
+      if (Array.isArray(ele.pais_id)) {
+        return ele.pais_id.map((pais) => ({
+          report_id: report,
+          ambito_id: ambito_id,
+          entidad: ele.entidad || null,
+          otro_id: otro_id,
+          pais_id: !isNaN(parseInt(pais)) ? parseInt(pais) : null,
+          rol_id: rol_id,
+          tipo_id: tipo_id,
+        }));
+      } else {
+        return {
+          report_id: report,
+          ambito_id: ambito_id,
+          entidad: ele.entidad || null,
+          otro_id: otro_id,
+          pais_id: !isNaN(parseInt(ele.pais_id)) ? parseInt(ele.pais_id) : null,
+          rol_id: rol_id,
+          tipo_id: tipo_id,
+        };
+      }
+    });
+  };
 
 module.exports = {
   getallAuditoria: async () => {
@@ -218,12 +233,10 @@ module.exports = {
   },
   createParticipants: async (data) => {
     let _participante = await deleteParticipante(data.report_id);
-    console.log("data participante", data.participante);
-    const participante_ = await createParticipante(
-      parseParticipante(data.participante, data.report_id)
-    );
-
-    console.log(participante_);
+    
+    const parsedParticipantes = parseParticipante(data.participante, data.report_id);
+    const participante_ = await createParticipante(parsedParticipantes);
+  
     const result = {
       participante: participante_,
     };
@@ -253,10 +266,12 @@ module.exports = {
     return { participante: events.cursor_p };
   },
   createClasification: async (data) => {
+    // let _ods = await deleteOds(data.report_id);
     console.log("Recibido en createClasification:", data);
     const ods_ = await createOds(parseOds(data.ods, data.report_id));
 
     console.log("ODS creados:", ods_);
+    //let _tag = await deleteTag(data.report_id);
 
     const tags = parseTag(data.tag, data.report_id);
     console.log("Tags parseados:", tags);
@@ -268,12 +283,11 @@ module.exports = {
 
         try {
           const tagIdArray = await newTag({ nombre: tag.nombre });
-          const tagId = tagIdArray[0]; 
+          const tagId = tagIdArray[0];
           console.log(`ID del nuevo tag '${tag.nombre}':`, tagId);
 
           const tagResult = await createTag(tagId, data.report_id);
           console.log("Resultado de createTag:", tagResult);
-
 
           results.push(tagResult);
         } catch (error) {
