@@ -317,6 +317,9 @@ module.exports = {
   },
 
   createInforme: async (data) => {
+    console.log("Datos recibidos en el servicio:", data);
+
+    let publicacion = data.publicacion;
     const newEvent = await db.procedureExecute(
       `BEGIN 
           PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
@@ -330,20 +333,30 @@ module.exports = {
             :ids
           ); 
        END;`,
-      { 
-        publicacion: { val: data.publicacion, type: oracledb.DATE },
-        idioma: { val: data.idioma ? parseInt(data.idioma) : null, type: oracledb.NUMBER },
+      {
+        publicacion: { val: publicacion, type: oracledb.STRING },
+        idioma: {
+          val: data.idioma ? parseInt(data.idioma) : null,
+          type: oracledb.NUMBER,
+        },
         imagen: { val: data.imagen, type: oracledb.STRING },
-        informe: { val: data.informe ? parseInt(data.informe) : null, type: oracledb.NUMBER },
-        pais: { val: data.pais ? parseInt(data.pais) : null, type: oracledb.NUMBER },
+        informe: {
+          val: data.informe ? parseInt(data.informe) : null,
+          type: oracledb.NUMBER,
+        },
+        pais: {
+          val: data.pais ? parseInt(data.pais) : null,
+          type: oracledb.NUMBER,
+        },
         report: { val: data.report, type: oracledb.NUMBER },
         url: { val: data.url, type: oracledb.STRING },
         ids: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT },
       }
     );
-  
+
+    console.log("Resultado de la ejecución del procedimiento:", newEvent);
     return newEvent.outBinds.ids;
-  },  
+  },
 
   createPractica: async (data) => {
     if (isNaN(data.ids))

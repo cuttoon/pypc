@@ -217,15 +217,22 @@ module.exports = {
         return next(400);
       }
 
-      req.body.publicacion = moment(
-        req.body.publicacion,
-        "DD-MM-YYYY",
-        true
-      ).isValid()
-        ? moment(req.body.publicacion, "DD-MM-YYYY").format(
-            "YYYY-MM-DD HH:mm:ss"
-          )
-        : null;
+      let publicacion = req.body.publicacion;
+
+      if (publicacion && moment(publicacion, moment.ISO_8601, true).isValid()) {
+        console.log("Fecha recibida en formato ISO 8601:", publicacion);
+        publicacion = moment(publicacion).format("YYYY-MM-DD[T]HH:mm:ss.SSS");
+      } else {
+        console.log("Formato de fecha inválido:", publicacion);
+        publicacion = null;
+      }
+
+      req.body.publicacion = publicacion;
+
+      console.log(
+        "Fecha procesada para la base de datos:",
+        req.body.publicacion
+      );
 
       /* const dataEvent = Object.assign({}, req.body);
       console.log("dataEvent", dataEvent) */
@@ -236,7 +243,7 @@ module.exports = {
       if (err instanceof CustomError) {
         return next(err);
       }
-      console.log(err);
+      console.error("Error en el controlador:", err);
       return resp.status(500).send({ statusCode: 500, message: err.message });
     }
   },
