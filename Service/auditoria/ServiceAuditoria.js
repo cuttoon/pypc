@@ -317,7 +317,6 @@ module.exports = {
   },
 
   createInforme: async (data) => {
-   // Ejecutar el procedimiento almacenado en Oracle
     const newEvent = await db.procedureExecute(
       `BEGIN 
           PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
@@ -331,8 +330,8 @@ module.exports = {
             :ids
           ); 
        END;`,
-      {
-        publicacion: { val: data.publicacion, type: oracledb.DB_TYPE_TIMESTAMP },
+      { 
+        publicacion: { val: data.publicacion, type: oracledb.DATE },
         idioma: { val: data.idioma ? parseInt(data.idioma) : null, type: oracledb.NUMBER },
         imagen: { val: data.imagen, type: oracledb.STRING },
         informe: { val: data.informe ? parseInt(data.informe) : null, type: oracledb.NUMBER },

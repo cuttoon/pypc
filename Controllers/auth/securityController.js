@@ -102,6 +102,7 @@ module.exports = {
   ForgotPassword: async (req, res, next) => {
     try {
       const { email } = req.body;
+
       const user = await userdb.getUserbyEmail(email);
       if (!user) {
         const error = new Error("Email does not exist.");
@@ -113,6 +114,11 @@ module.exports = {
 
       if (!userId) {
         throw new Error("User ID not found.");
+      }
+
+      const result = await forgotPass(email);
+      if (result.error) {
+        throw new Error(result.error);
       }
 
       const token = TokenSignup({ id: userId }, secret, "1h");
@@ -128,6 +134,7 @@ module.exports = {
       next(error);
     }
   },
+
   SendEmail: async (req, res) => {
     try {
       const { email, subject, text, html } = req.body;

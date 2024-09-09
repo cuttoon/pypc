@@ -217,7 +217,18 @@ module.exports = {
         return next(400);
       }
 
-      req.body.publicacion = moment(req.body.publicacion).toDate();
+      req.body.publicacion = moment(
+        req.body.publicacion,
+        "DD-MM-YYYY",
+        true
+      ).isValid()
+        ? moment(req.body.publicacion, "DD-MM-YYYY").format(
+            "YYYY-MM-DD HH:mm:ss"
+          )
+        : null;
+
+      /* const dataEvent = Object.assign({}, req.body);
+      console.log("dataEvent", dataEvent) */
 
       const informe = await userdb.createInforme(req.body);
       resp.send({ result: informe });
@@ -275,6 +286,7 @@ module.exports = {
       validateAuditoria(req.body);
 
       const dataEvent = Object.assign({}, req.body);
+      console.log("dataEvent", dataEvent);
       let result = null;
       if (req.body.ids == 0) {
         result = await userdb.createAuditoria(dataEvent);
