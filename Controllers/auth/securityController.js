@@ -102,8 +102,6 @@ module.exports = {
   ForgotPassword: async (req, res, next) => {
     try {
       const { email } = req.body;
-
-      // Verifica si el usuario existe por email
       const user = await userdb.getUserbyEmail(email);
       if (!user) {
         const error = new Error("Email does not exist.");

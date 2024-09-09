@@ -43,7 +43,6 @@ module.exports = {
       let { userId } = await userdb.updateUser(updateUser);
       console.log('Usuario actualizado con ID:', userId);
 
-      // Aquí quitamos la lógica de enviar correo, eso ahora es responsabilidad del frontend
       resp.send({ userId });
     } catch (err) {
       if (err instanceof CustomError) {
