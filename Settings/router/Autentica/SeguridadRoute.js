@@ -14,6 +14,8 @@ router.post('/ForgotPassword', Security.ForgotPassword);
 // para restablecerlo
 router.post('/ResetPassword', Security.ResetPassword);
 
+router.post('/sendEmail', Security.SendEmail);
+
 
 module.exports = (app, nextMain) => {
     app.use('/intosai/security', router);

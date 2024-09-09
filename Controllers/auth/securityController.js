@@ -54,30 +54,20 @@ module.exports = {
   Signup: async (req, res) => {
     try {
       const newUser = validateUser(req.body);
-  
+
       if (await existEmail(req.body.correo)) {
         return res.status(400).send({ message: "Email already exists" });
       }
 
       let result = await userdbUser.createUser(newUser);
-  
+
       const token = TokenSignup({ id: result }, secret, "1h");
-  
-      const resetLink = `http://127.0.0.1:9090/reset-password`;
-  
-      const emailResult = await sendEmail(
-        req.body.correo,
-        "Set Your Password",
-        "Please click the link below to set your password.",
-        `<p>Please click the link below to set your password:</p><p><a href="${resetLink}">Click aqui</a></p>`
-      );
-  
-      if (emailResult.error) {
-        throw new Error(emailResult.error);
-      }
+
       res.status(200).json({
-        message: "User created successfully, please check your email to set your password.",
-        token: token
+        message:
+          "User created successfully, please check your email to set your password.",
+        token: token,
+        email: req.body.correo,
       });
     } catch (ex) {
       return res.status(500).send({ message: ex.message });
@@ -112,7 +102,7 @@ module.exports = {
   ForgotPassword: async (req, res, next) => {
     try {
       const { email } = req.body;
-  
+
       // Verifica si el usuario existe por email
       const user = await userdb.getUserbyEmail(email);
       if (!user) {
@@ -120,34 +110,43 @@ module.exports = {
         error.status = 404;
         throw error;
       }
-  
+
       const userId = user.NUSU_ID;
-  
+
       if (!userId) {
         throw new Error("User ID not found.");
       }
-  
+
       const token = TokenSignup({ id: userId }, secret, "1h");
-  
-      const resetLink = `http://127.0.0.1:9090/reset-password`;
-  
-      const subject = "Password Reset Request";
-      const text = `To reset your password, click the following link: ${resetLink}`;
-      const html = `<p>To reset your password, click the following link:</p><p><a href="${resetLink}">Reset Password</a></p>`;
-  
-      const result = await sendEmail(email, subject, text, html);
-  
-      if (result.error) {
-        throw new Error(result.error);
-      }
-  
+
       res.status(200).json({
-        message: result.success || "Password reset email sent successfully.",
-        token: token
+        message:
+          "Token generated successfully, please use this token to reset the password.",
+        token: token,
+        email: email,
       });
     } catch (error) {
       console.error("Error in ForgotPassword controller:", error);
       next(error);
     }
-  }
+  },
+  SendEmail: async (req, res) => {
+    try {
+      const { email, subject, text, html } = req.body;
+      if (!email || !subject || !html) {
+        return res.status(400).send({ message: "All fields are required" });
+      }
+      const emailResult = await sendEmail(email, subject, text, html);
+
+      if (emailResult.error) {
+        return res.status(500).send({ message: emailResult.error });
+      }
+
+      res
+        .status(200)
+        .send({ message: "Email sent successfully", result: emailResult });
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  },
 };

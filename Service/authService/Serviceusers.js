@@ -73,28 +73,9 @@ module.exports = {
           autoCommit: true,
         }
       );
-
       const userId = bindings.ids.val;
 
-      const userResult = await db.simpleExecute(
-        `
-            SELECT cusu_email
-            FROM scai_usuarios
-            WHERE nusu_id = :id
-        `,
-        { id: userId },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
-
-      const userEmail = userResult.rows.length
-        ? userResult.rows[0].CUSU_EMAIL
-        : null;
-
-      if (!userEmail) {
-        throw new Error("No se pudo encontrar el correo del usuario.");
-      }
-
-      return { userId, userEmail };
+      return { userId };
     } catch (err) {
       console.error("Error al ejecutar el procedimiento", err);
       throw new Error(err.message);
