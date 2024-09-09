@@ -12,6 +12,7 @@ const {
   deleteParticipante,
   createParticipante,
 } = require("../participant/ServiceParticipant");
+const moment = require("moment");
 
 const parseOds = (data, report) => {
   return data.map((ele) => {
@@ -36,36 +37,35 @@ const parseTag = (data, report) => {
 };
 
 const parseParticipante = (data, report) => {
-    return data.flatMap((ele) => {
-  
-      const ambito_id = ele.ambito_id ? parseInt(ele.ambito_id) : null;
-      const otro_id = ele.otro_id ? parseInt(ele.otro_id) : null;
-      const rol_id = ele.rol_id ? parseInt(ele.rol_id) : null;
-      const tipo_id = ele.tipo_id ? parseInt(ele.tipo_id) : null;
-  
-      if (Array.isArray(ele.pais_id)) {
-        return ele.pais_id.map((pais) => ({
-          report_id: report,
-          ambito_id: ambito_id,
-          entidad: ele.entidad || null,
-          otro_id: otro_id,
-          pais_id: !isNaN(parseInt(pais)) ? parseInt(pais) : null,
-          rol_id: rol_id,
-          tipo_id: tipo_id,
-        }));
-      } else {
-        return {
-          report_id: report,
-          ambito_id: ambito_id,
-          entidad: ele.entidad || null,
-          otro_id: otro_id,
-          pais_id: !isNaN(parseInt(ele.pais_id)) ? parseInt(ele.pais_id) : null,
-          rol_id: rol_id,
-          tipo_id: tipo_id,
-        };
-      }
-    });
-  };
+  return data.flatMap((ele) => {
+    const ambito_id = ele.ambito_id ? parseInt(ele.ambito_id) : null;
+    const otro_id = ele.otro_id ? parseInt(ele.otro_id) : null;
+    const rol_id = ele.rol_id ? parseInt(ele.rol_id) : null;
+    const tipo_id = ele.tipo_id ? parseInt(ele.tipo_id) : null;
+
+    if (Array.isArray(ele.pais_id)) {
+      return ele.pais_id.map((pais) => ({
+        report_id: report,
+        ambito_id: ambito_id,
+        entidad: ele.entidad || null,
+        otro_id: otro_id,
+        pais_id: !isNaN(parseInt(pais)) ? parseInt(pais) : null,
+        rol_id: rol_id,
+        tipo_id: tipo_id,
+      }));
+    } else {
+      return {
+        report_id: report,
+        ambito_id: ambito_id,
+        entidad: ele.entidad || null,
+        otro_id: otro_id,
+        pais_id: !isNaN(parseInt(ele.pais_id)) ? parseInt(ele.pais_id) : null,
+        rol_id: rol_id,
+        tipo_id: tipo_id,
+      };
+    }
+  });
+};
 
 module.exports = {
   getallAuditoria: async () => {
@@ -233,10 +233,13 @@ module.exports = {
   },
   createParticipants: async (data) => {
     let _participante = await deleteParticipante(data.report_id);
-    
-    const parsedParticipantes = parseParticipante(data.participante, data.report_id);
+
+    const parsedParticipantes = parseParticipante(
+      data.participante,
+      data.report_id
+    );
     const participante_ = await createParticipante(parsedParticipantes);
-  
+
     const result = {
       participante: participante_,
     };
@@ -314,32 +317,35 @@ module.exports = {
   },
 
   createInforme: async (data) => {
-    if (isNaN(data.ids))
-      data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT };
-    else
-      data.ids = {
-        type: oracledb.NUMBER,
-        dir: oracledb.BIND_INOUT,
-        val: parseInt(data.ids),
-      };
-
+   // Ejecutar el procedimiento almacenado en Oracle
     const newEvent = await db.procedureExecute(
-      `BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
+      `BEGIN 
+          PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
             :publicacion,
             :idioma,
-            :ids,
             :imagen,
             :informe,
             :pais,
             :report,
-            :url       
-            ); END;`,
-      data
+            :url,
+            :ids
+          ); 
+       END;`,
+      {
+        publicacion: { val: data.publicacion, type: oracledb.DB_TYPE_TIMESTAMP },
+        idioma: { val: data.idioma ? parseInt(data.idioma) : null, type: oracledb.NUMBER },
+        imagen: { val: data.imagen, type: oracledb.STRING },
+        informe: { val: data.informe ? parseInt(data.informe) : null, type: oracledb.NUMBER },
+        pais: { val: data.pais ? parseInt(data.pais) : null, type: oracledb.NUMBER },
+        report: { val: data.report, type: oracledb.NUMBER },
+        url: { val: data.url, type: oracledb.STRING },
+        ids: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT },
+      }
     );
-    // :ffin,
-    // :fini,
-    return newEvent.ids;
-  },
+  
+    return newEvent.outBinds.ids;
+  },  
+
   createPractica: async (data) => {
     if (isNaN(data.ids))
       data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_INOUT };

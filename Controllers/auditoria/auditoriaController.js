@@ -4,6 +4,9 @@ const CustomError = require("../../Service/errors");
 const { deleteFiles } = require("../../Settings/Media/common");
 const moment = require("moment");
 const { validateAuditoria } = require("../../Models");
+const path = require("path");
+const fs = require("fs");
+
 module.exports = {
   getallauditoria: async (req, resp, next) => {
     try {
@@ -208,22 +211,13 @@ module.exports = {
   },
   createInforme: async (req, resp, next) => {
     try {
-      console.log("Body", req.body);
-      console.log("Files:", req.files); // Aquí debería mostrar los archivos subidos
-
-      if (!req.files || Object.keys(req.files).length === 0) {
-        console.log("No files uploaded.");
-        return resp.status(400).send({ message: "No files were uploaded." });
+      //validateParticipants(req.body);
+      if (req.files.imagen == undefined) {
+        //deleteFiles(req.files);
+        return next(400);
       }
 
-      if (!req.files.imagen) {
-        return resp.status(400).send({ message: "Image file is missing." });
-      }
-
-      req.body.publicacion = moment(
-        req.body.publicacion,
-        "DD-MM-YYYY"
-      ).toISOString();
+      req.body.publicacion = moment(req.body.publicacion).toDate();
 
       const informe = await userdb.createInforme(req.body);
       resp.send({ result: informe });
@@ -271,12 +265,10 @@ module.exports = {
 
       if (!req.body.fini || !req.body.ffin) {
         console.log("Fechas invalidas");
-        return resp
-          .status(400)
-          .send({
-            statusCode: 400,
-            message: "Fecha inválida, por favor use el formato DD-MM-YYYY.",
-          });
+        return resp.status(400).send({
+          statusCode: 400,
+          message: "Fecha inválida, por favor use el formato DD-MM-YYYY.",
+        });
       }
       req.body.usuario = req.body.usuario;
 
