@@ -13,6 +13,9 @@ const {
   createParticipante,
 } = require("../participant/ServiceParticipant");
 const moment = require("moment");
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const parseOds = (data, report) => {
   return data.map((ele) => {
@@ -317,45 +320,31 @@ module.exports = {
   },
 
   createInforme: async (data) => {
-    console.log("Datos recibidos en el servicio:", data);
+    try {
+      console.log("data.ids", data.ids);
+      data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
+      console.log("data", data);
+      const result = await db.procedureExecute(
+        `BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
+              :publicacion,
+              :idioma,
+              :ids,
+              :imagen,
+              :informe,
+              :pais,
+              :report,
+              :url
+              ); END;`,
+        data
+      );
 
-    let publicacion = data.publicacion;
-    const newEvent = await db.procedureExecute(
-      `BEGIN 
-          PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
-            :publicacion,
-            :idioma,
-            :imagen,
-            :informe,
-            :pais,
-            :report,
-            :url,
-            :ids
-          ); 
-       END;`,
-      {
-        publicacion: { val: publicacion, type: oracledb.STRING },
-        idioma: {
-          val: data.idioma ? parseInt(data.idioma) : null,
-          type: oracledb.NUMBER,
-        },
-        imagen: { val: data.imagen, type: oracledb.STRING },
-        informe: {
-          val: data.informe ? parseInt(data.informe) : null,
-          type: oracledb.NUMBER,
-        },
-        pais: {
-          val: data.pais ? parseInt(data.pais) : null,
-          type: oracledb.NUMBER,
-        },
-        report: { val: data.report, type: oracledb.NUMBER },
-        url: { val: data.url, type: oracledb.STRING },
-        ids: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT },
-      }
-    );
+      console.log("Resultado de la inserción:", result);
 
-    console.log("Resultado de la ejecución del procedimiento:", newEvent);
-    return newEvent.outBinds.ids;
+      return result.ids;
+    } catch (error) {
+      console.error("Error durante la creación del informe:", error.message);
+      throw new Error("Error al crear el informe en la base de datos.");
+    }
   },
 
   createPractica: async (data) => {

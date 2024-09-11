@@ -6,6 +6,9 @@ const moment = require("moment");
 const { validateAuditoria } = require("../../Models");
 const path = require("path");
 const fs = require("fs");
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 module.exports = {
   getallauditoria: async (req, resp, next) => {
@@ -212,28 +215,18 @@ module.exports = {
   createInforme: async (req, resp, next) => {
     try {
       //validateParticipants(req.body);
+      console.log("req.files.imagen", req.files.imagen)
       if (req.files.imagen == undefined) {
         //deleteFiles(req.files);
         return next(400);
       }
 
-      let publicacion = req.body.publicacion;
+      console.log("req.body.publicacion", moment(req.body.publicacion, 'DD-MM-YYYY', true))
+      req.body.publicacion = moment(req.body.publicacion, 'DD-MM-YYYY', true).toDate();
 
-      if (publicacion && moment(publicacion, moment.ISO_8601, true).isValid()) {
-        console.log("Fecha recibida en formato ISO 8601:", publicacion);
-        publicacion = moment(publicacion).format("YYYY-MM-DD[T]HH:mm:ss.SSS");
-      } else {
-        console.log("Formato de fecha inválido:", publicacion);
-        publicacion = null;
-      }
+      
 
-      req.body.publicacion = publicacion;
-
-      console.log(
-        "Fecha procesada para la base de datos:",
-        req.body.publicacion
-      );
-
+      console.log("req.body.publicacion", req.body.publicacion)
       /* const dataEvent = Object.assign({}, req.body);
       console.log("dataEvent", dataEvent) */
 

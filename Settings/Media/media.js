@@ -6,13 +6,11 @@ const { deleteFiles, filesAssingBody, materialsAssingBody,reportsAssingBody} = r
 
 const media = upload.fields([{ name: 'imagen', maxCount: 1 }]);
 
-const checkFiles = (req, resp, next) => { 
+const checkFiles = (req, resp, next)=> { 
     media(req, resp, function(err) {
-        console.log('Files checkFiles:', req.files);  // <-- Añadir esto
-        console.log('Body checkFiles:', req.body);    // <-- Y esto también
         const files = JSON.parse(JSON.stringify(req.files)); 
         const reqBody = JSON.parse(JSON.stringify(req.body));
-
+        
         if (err) {
             deleteFiles(files); 
             if (err instanceof CustomError) {                
@@ -22,9 +20,14 @@ const checkFiles = (req, resp, next) => {
                 return next(new CustomError({ code: err.code, field: err.field, error: err.message }, 400));           
             }
         } else {
-            // Si no esperas archivos, simplemente asigna el cuerpo de la solicitud
-            req.body = { ...reqBody };
-            return next();
+            if (Object.keys(files).length <= 1) {   
+               //(deleteFiles(files);
+                req.body = filesAssingBody(files, reqBody); 
+                return next();
+            } else {
+                req.body = filesAssingBody(files, reqBody);   
+                return next();         
+            }
         }
     });
 };
