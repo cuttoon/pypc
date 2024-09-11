@@ -373,12 +373,14 @@ module.exports = {
   },
   createAuditoria: async (data) => {
     data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
+    data.imagen = {val: data.imagen ? parseInt(data.imagen) : null};
     const newEvent = await db.procedureExecute(
       `BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_AUDITORIA(
             :categoria,
             :ffin,
             :fini,
             :ids,
+            :imagen,
             :objetivo,
             :resumen,
             :tipo,
