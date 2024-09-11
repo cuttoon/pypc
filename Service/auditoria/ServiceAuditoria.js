@@ -323,6 +323,8 @@ module.exports = {
     try {
       console.log("data.ids", data.ids);
       data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
+      data.informe = {val: data.informe ? parseInt(data.informe) : null};
+      data.pais = {val: data.pais ? parseInt(data.pais) : null};
       console.log("data", data);
       const result = await db.procedureExecute(
         `BEGIN PG_SCAI_CONSULTA.PA_SCAI_INSERT_REPORT(
