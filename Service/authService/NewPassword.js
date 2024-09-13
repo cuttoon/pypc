@@ -44,7 +44,7 @@ module.exports = {
       await db.simpleExecute(
         `
         BEGIN
-            PG_SCAI_UTILIDAD.PA_PER_ENVIAEMAIL_HTML(
+            PG_SCAI_UTILIDAD.PA_SCAI_ENVIAEMAIL_HTML(
                 'localhost',
                 :p_to,
                 'no-reply@example.com',
