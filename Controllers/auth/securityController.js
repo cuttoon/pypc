@@ -22,11 +22,13 @@ module.exports = {
     try {
       const { email, password } = req.body;
       if (email == null && password == null) {
-        return res
-          .status(400)
-          .send({ statusCode: 400, message: "Incomplete data" });
+        throw new CustomError("Incomplete data", 400);
       } else {
         let datavalidEmail = await userdb.getUserbyEmail(email);
+
+        if (!datavalidEmail) {
+          throw new CustomError("Email not found", 404);
+        }
 
         if (bcrypt.compareSync(password, datavalidEmail.CUSU_PASSWORD)) {
           const payload = {
@@ -56,7 +58,7 @@ module.exports = {
       const newUser = validateUser(req.body);
 
       if (await existEmail(req.body.correo)) {
-        return res.status(400).send({ message: "Email already exists" });
+        throw new CustomError("Email already exists", 400);
       }
 
       let result = await userdbUser.createUser(newUser);
