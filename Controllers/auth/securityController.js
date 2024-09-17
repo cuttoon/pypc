@@ -83,7 +83,7 @@ module.exports = {
       const userId = decodedToken.id;
 
       if (!ExisToken(userId)) {
-        return res.status(400).json({ message: "Invalid or expired token :D" });
+        return res.status(400).json({ message: "Invalid or expired token" });
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -111,7 +111,6 @@ module.exports = {
       }
 
       const userId = user.NUSU_ID;
-
       if (!userId) {
         throw new Error("User ID not found.");
       }
@@ -124,8 +123,7 @@ module.exports = {
       const token = TokenSignup({ id: userId }, secret, "1h");
 
       res.status(200).json({
-        message:
-          "Token generated successfully, please use this token to reset the password.",
+        message: "Please check your email to set your password.",
         token: token,
         email: email,
       });

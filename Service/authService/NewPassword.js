@@ -47,7 +47,7 @@ module.exports = {
             PG_SCAI_UTILIDAD.PA_SCAI_ENVIAEMAIL_HTML(
                 'localhost',
                 :p_to,
-                'no-reply@example.com',
+                'soporte@contraloria.gob.pe',
                 :p_subject,
                 :p_text,
                 :p_html
