@@ -22,32 +22,31 @@ module.exports = {
     try {
       const { email, password } = req.body;
       if (email == null && password == null) {
-        throw new CustomError("Incomplete data", 400);
+        return res.status(400).send({ statusCode: 400, message: "Incomplete data" });
       } else {
         let datavalidEmail = await userdb.getUserbyEmail(email);
 
         if (!datavalidEmail) {
-          throw new CustomError("Email not found", 404);
+          return res.status(404).send({ statusCode: 404, message: "Email not found" });
         }
 
-        if (bcrypt.compareSync(password, datavalidEmail.CUSU_PASSWORD)) {
-          const payload = {
-            id: datavalidEmail.NUSU_ID,
-            rol: datavalidEmail.NUSU_ROLID,
-          };
-          const token = TokenSignup(payload, secret, "1h");
-
-          return res.status(200).send({
-            IdCuenta: datavalidEmail.NUSU_ID,
-            IdRol: datavalidEmail.NUSU_ROLID,
-            Nombre: datavalidEmail.NOMBRE,
-            Token: token,
-          });
-        } else {
-          return res
-            .status(401)
-            .send({ statusCode: 400, message: "Inconsistent data" });
+        const passwordMatch = bcrypt.compareSync(password,datavalidEmail.CUSU_PASSWORD);
+        if (!passwordMatch) {
+          return res.status(401).send({ statusCode: 401, message: "Invalid password" });
         }
+
+        const payload = {
+          id: datavalidEmail.NUSU_ID,
+          rol: datavalidEmail.NUSU_ROLID,
+        };
+        const token = TokenSignup(payload, secret, "1h");
+
+        return res.status(200).send({
+          IdCuenta: datavalidEmail.NUSU_ID,
+          IdRol: datavalidEmail.NUSU_ROLID,
+          Nombre: datavalidEmail.NOMBRE,
+          Token: token,
+        });
       }
     } catch (ex) {
       return res.status(500).send({ statusCode: 500, message: ex.message });
@@ -58,7 +57,7 @@ module.exports = {
       const newUser = validateUser(req.body);
 
       if (await existEmail(req.body.correo)) {
-        throw new CustomError("Email already exists", 400);
+        return res.status(400).send({ statusCode: 400, message: "Email already exists" });
       }
 
       let result = await userdbUser.createUser(newUser);
@@ -107,14 +106,12 @@ module.exports = {
 
       const user = await userdb.getUserbyEmail(email);
       if (!user) {
-        const error = new Error("Email does not exist.");
-        error.status = 404;
-        throw error;
+        return res.status(404).json({ message: "Email does not exist." });
       }
 
       const userId = user.NUSU_ID;
       if (!userId) {
-        throw new Error("User ID not found.");
+        return res.status(404).json({ message: "User ID not found." });
       }
 
       const result = await forgotPass(email);
