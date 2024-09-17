@@ -141,8 +141,8 @@ module.exports = {
       if (!email || !subject || !html) {
         return res.status(400).send({ message: "All fields are required" });
       }
-      const emailResult = await sendEmail(email, subject, text, html);
 
+      const emailResult = await sendEmail(email, subject, text, html);
       if (emailResult.error) {
         return res.status(500).send({ message: emailResult.error });
       }
