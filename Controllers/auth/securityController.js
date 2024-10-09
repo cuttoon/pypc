@@ -2,39 +2,35 @@ const userdb = require("../../Service/authService/Serviceaccount");
 const userdbUser = require("../../Service/authService/Serviceusers");
 const { secret } = require("../../Settings/Environment/config");
 const bcrypt = require("bcrypt");
-const { validateUser } = require("../../Models");
+const { validateUser, validatePassword } = require("../../Models/users");
 const { existEmail } = require("../common");
 const {
   TokenSignup,
   ExisToken,
   TokenDestroy,
 } = require("../../Settings/Server/middleware/TokenService");
+const {
+  forgotPass,
+  resetPass,
+  sendEmail,
+} = require("../../Service/authService/NewPassword");
+
 module.exports = {
   Signin: async (req, res) => {
     try {
       const { email, password } = req.body;
-      console.log("recibiendo data", req.body);
       if (email == null && password == null) {
-        return res
-          .status(400)
-          .send({ statusCode: 400, message: "Incomplete data" });
+        return res.status(400).send({ statusCode: 400, message: "Incomplete data" });
       } else {
         let datavalidEmail = await userdb.getUserbyEmail(email);
 
         if (!datavalidEmail) {
-          return res
-            .status(404)
-            .send({ statusCode: 404, message: "Email not found" });
+          return res.status(404).send({ statusCode: 404, message: "Email not found" });
         }
 
-        const passwordMatch = bcrypt.compareSync(
-          password,
-          datavalidEmail.CUSU_PASSWORD
-        );
+        const passwordMatch = bcrypt.compareSync(password,datavalidEmail.CUSU_PASSWORD);
         if (!passwordMatch) {
-          return res
-            .status(401)
-            .send({ statusCode: 401, message: "Invalid password" });
+          return res.status(401).send({ statusCode: 401, message: "Invalid password" });
         }
 
         const payload = {
@@ -45,7 +41,7 @@ module.exports = {
 
         return res.status(200).send({
           Id: datavalidEmail.NUSU_ID,
-          IdRol: datavalidEmail.NUSU_ROLID,
+          Rol: datavalidEmail.NUSU_ROLID,
           Name: datavalidEmail.NAME,
           Token: token,
         });
@@ -76,6 +72,86 @@ module.exports = {
       });
     } catch (ex) {
       return res.status(500).send({ message: ex.message });
+    }
+  },
+  ResetPassword: async (req, res, next) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      validatePassword(newPassword);
+
+      const decodedToken = jwt.verify(token, secret);
+      const userId = decodedToken.id;
+
+      if (!ExisToken(userId)) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await resetPass(userId, hashedPassword);
+
+      TokenDestroy(userId);
+
+      res
+        .status(200)
+        .json({ message: "Password has been successfully reset." });
+    } catch (error) {
+      next(error);
+    }
+  },
+  ForgotPassword: async (req, res, next) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required." });
+      }
+
+      const user = await userdb.getUserbyEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "Email does not exist." });
+      }
+
+      const userId = user.NUSU_ID;
+      if (!userId) {
+        return res.status(404).json({ message: "User ID not found." });
+      }
+
+      const result = await forgotPass(email);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      const token = TokenSignup({ id: userId }, secret, "1h");
+
+      res.status(200).json({
+        message: "Please check your email to set your password.",
+        token: token,
+        email: email,
+      });
+    } catch (error) {
+      console.error("Error in ForgotPassword controller:", error);
+      next(error);
+    }
+  },
+  SendEmail: async (req, res) => {
+    try {
+      const { email, subject, text, html } = req.body;
+      if (!email || !subject || !html) {
+        return res.status(400).send({ message: "All fields are required" });
+      }
+
+      const emailResult = await sendEmail(email, subject, text, html);
+      if (emailResult.error) {
+        return res.status(500).send({ message: emailResult.error });
+      }
+
+      res
+        .status(200)
+        .send({ message: "Email sent successfully", result: emailResult });
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
     }
   },
 };
