@@ -8,7 +8,7 @@ module.exports = {
       const result = await db.simpleExecute(
         `
         BEGIN
-            PG_SCAI_CONSULTA.PA_SCAI_FORGOT_PASSWORD(:p_email, :p_user_id);
+            PG_SPCI_CONSULTA.PA_SPCI_FORGOT_PASSWORD(:p_email, :p_user_id);
         END;`,
         {
           p_email: email,
@@ -30,7 +30,7 @@ module.exports = {
       const result = await db.procedureExecute(
         `
             BEGIN 
-                PG_SCAI_CONSULTA.PA_SCAI_RESET_PASSWORD(:p_user_id, :p_new_pass);
+                PG_SPCI_CONSULTA.PA_SPCI_RESET_PASSWORD(:p_user_id, :p_new_pass);
             END;`,
         { p_user_id: userId, p_new_pass: hashedPassword }
       );
@@ -44,7 +44,7 @@ module.exports = {
       await db.simpleExecute(
         `
         BEGIN
-            PG_SCAI_UTILIDAD.PA_SCAI_ENVIAEMAIL_HTML(
+            PG_SPCI_UTILIDAD.PA_SPCI_ENVIAEMAIL_HTML(
                 'localhost',
                 :p_to,
                 'soporte@contraloria.gob.pe',

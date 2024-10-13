@@ -1,5 +1,5 @@
 const oracledb = require('oracledb');
-const dbConfig = require('../../Settings/Enviroment/config');
+const dbConfig = require('../../Settings/Environment/config');
 const { extractCursors } = require('./extractCursors');
 var SimpleOracleDB = require('simple-oracledb');
 

@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { Common } = require('../../../Controllers');
-router.get('/getallCategorias', Common.getallCategoriaList);
-router.get('/getallTipoAuditoria', Common.getallTipoAuditoriaList);
-router.get('/getallOds', Common.getallOds);
-router.get('/getallAmbito', Common.getallAmbitos);
-router.get('/getallPais', Common.getallPaises);
-router.get('/getallParametro/:table_name', Common.getallParametros);
-router.get('/getallIdioma/', Common.getallIdiomas);
+
+router.get('/getAllSAI', Common.getAllSAI);
+router.get('/getAllCategory', Common.getAllCategory);
+router.get('/getAllModels', Common.getAllModels);
+router.get('/getAllGeoscope', Common.getAllGeoscope);
+router.get('/getAllInteractions', Common.getAllInteractions);
+router.get('/getAllPhase', Common.getAllPhase);
+
 module.exports = (app, nextMain) => {
-    app.use('/intosai/common', router);
-    return nextMain();
+  app.use('/pypc/common', router);
+  return nextMain();
 };

@@ -1,4 +1,4 @@
-const dbConfig = require('./Settings/Enviroment/config');
+const dbConfig = require('./Settings/Environment/config');
 const webServer = require('./Settings/Server/webServer');
 const database = require('./Settings/Database/database');
 const defaultThreadPoolSize = 3;

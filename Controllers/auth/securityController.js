@@ -1,6 +1,6 @@
 const userdb = require("../../Service/authService/Serviceaccount");
 const userdbUser = require("../../Service/authService/Serviceusers");
-const { secret } = require("../../Settings/Enviroment/config");
+const { secret } = require("../../Settings/Environment/config");
 const bcrypt = require("bcrypt");
 const { validateUser, validatePassword } = require("../../Models/users");
 const { existEmail } = require("../common");
@@ -9,7 +9,7 @@ const {
   TokenSignup,
   ExisToken,
   TokenDestroy,
-} = require("../../Settings/Server/midlewar/TokenService");
+} = require("../../Settings/Server/middleware/TokenService");
 const {
   forgotPass,
   resetPass,

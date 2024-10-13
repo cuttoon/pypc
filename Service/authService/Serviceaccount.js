@@ -3,8 +3,25 @@ const db = require('../../Settings/Database/database');
 
 module.exports = {
     getUserbyEmail: async(email) => {
-        const user = await db.procedureExecuteCursor(`BEGIN PG_SCAI_CONSULTA.PA_SCAI_GENERIC_SELECT_EXECUTE(:sql_stmt,:cursor); END;`, {
-            sql_stmt: `SELECT NUSU_ID,CUSU_EMAIL,CUSU_PASSWORD,NUSU_ISACTIVE,NUSU_ISSUPERADMIN,NUSU_ISSTAFF,NUSU_ROLID, CUSU_FIRSTNAME AS NOMBRE FROM SCAI_USUARIOS WHERE CUSU_EMAIL='${email}'`,
+        const user = await db.procedureExecuteCursor(`BEGIN PG_SPCI_CONSULTA.PA_SPCI_GENERIC_SELECT_EXECUTE(:sql_stmt,:cursor); END;`, {
+            sql_stmt: `
+                SELECT 
+                    u.NUSU_ID,
+                    u.CUSU_EMAIL,
+                    u.CUSU_PASSWORD,
+                    u.NUSU_ISACTIVE,
+                    u.NUSU_ISSUPERADMIN,
+                    u.NUSU_ISSTAFF,
+                    u.NUSU_ROLID,
+                    u.CUSU_FIRSTNAME AS NAME,
+                    r.CROLE_NAME AS ROL
+                FROM 
+                    SPCI_USERS u
+                LEFT JOIN 
+                    SPCI_ROLES r ON u.NUSU_ROLID = r.NROLE_ID
+                WHERE 
+                    u.CUSU_EMAIL='${email}'
+            `,
             cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
         });
         return user.cursor[0];

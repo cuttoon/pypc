@@ -2,7 +2,6 @@ const userdb = require("../../Service/authService/Serviceusers");
 const { validateUser } = require("../../Models/users");
 const CustomError = require("../../Service/errors");
 const { existEmail, existEmailUpdate } = require("../common");
-const { sendEmail } = require("../../Service/authService/NewPassword");
 
 module.exports = {
   getAllUsers: async (req, resp, next) => {

@@ -1,8 +1,8 @@
 const validateUser = require('./users');
-const validateAuditoria = require('./auditoria');
+const validateDocuments = require('./documents');
 
 
 module.exports = {
     validateUser,
-    validateAuditoria,
+    validateDocuments,
 };
