@@ -11,8 +11,9 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
-        console.log("detail", req.body)
-      const document = await userdb.getDetail({ document_id: req.body.document_id });
+      const document = await userdb.getDetail({
+        document_id: req.body.document_id,
+      });
       res.send({ result: document });
     } catch (error) {
       res.status(500).send({ statusCode: 500, message: error.message });
@@ -44,7 +45,7 @@ module.exports = {
   },
   postInteractionGraph: async (req, resp, next) => {
     try {
-        console.log(req.body)
+      console.log(req.body);
       const document = await userdb.postInteractionGraph(req.body);
       resp.send({ result: document });
     } catch (err) {

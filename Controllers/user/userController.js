@@ -39,8 +39,9 @@ module.exports = {
                 throw new CustomError({ correo: ['email already exists']}, 400);
             }
 
-            let result = await userdb.updateUser(updateUser)
-            resp.send({ result });
+            let { userId } = await userdb.updateUser(updateUser);
+            console.log('Usuario actualizado con ID:', userId);
+            resp.send({ userId });
         } catch (err) {
             if (err instanceof CustomError) {
                 return next(err);  
