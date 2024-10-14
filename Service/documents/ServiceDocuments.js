@@ -54,7 +54,7 @@ module.exports = {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
     const cursor = await db.procedureExecuteCursor(
-      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_ADVANCE_SEARCH(:category,:model,:sai,:geoscope,:interaction,:phase,:scope_start,:scope_end,:cursor); END;`,
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_ADVANCE_SEARCH(:category,:model,:country,:geoscope,:interaction,:phase,:scope_start,:scope_end,:cursor); END;`,
       data
     );
     return cursor.cursor;

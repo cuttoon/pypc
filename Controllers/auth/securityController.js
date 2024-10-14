@@ -44,7 +44,7 @@ module.exports = {
         return res.status(200).send({
           IdCuenta: datavalidEmail.NUSU_ID,
           IdRol: datavalidEmail.NUSU_ROLID,
-          Nombre: datavalidEmail.NOMBRE,
+          Nombre: datavalidEmail.NAME,
           Token: token,
         });
       }

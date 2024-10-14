@@ -11,9 +11,7 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
-      const document = await userdb.getDetail({
-        document_id: req.body.document_id,
-      });
+      const document = await userdb.getDetail(req.body);
       res.send({ result: document });
     } catch (error) {
       res.status(500).send({ statusCode: 500, message: error.message });

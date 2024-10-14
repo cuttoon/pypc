@@ -39,7 +39,7 @@ module.exports = {
             :gender,
             :ids,
             :name,
-            :country
+            :sai
             ); END;`,
       data
     );
@@ -52,7 +52,7 @@ module.exports = {
         gender: { val: data.gender, type: oracledb.STRING },
         ids: { dir: oracledb.BIND_INOUT, val: data.ids, type: oracledb.NUMBER },
         name: { val: data.name, type: oracledb.STRING },
-        country: { val: data.country, type: oracledb.NUMBER },
+        sai: { val: data.sai, type: oracledb.NUMBER },
         rol: { val: data.rol, type: oracledb.NUMBER },
       };
 
@@ -64,7 +64,7 @@ module.exports = {
                           :gender,
                           :ids,
                           :name,
-                          :country,
+                          :sai,
                           :rol
                       ); 
                   END;`,
