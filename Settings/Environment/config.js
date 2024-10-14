@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log('Valor de SECRET_KEY:', process.env.SECRET_KEY);
 module.exports = {
     eventsPool: {
         user: process.env.USER,

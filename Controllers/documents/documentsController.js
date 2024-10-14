@@ -11,10 +11,17 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
-      const document = await userdb.getDetail({
+            const documentDetail = await userdb.getDetail({
         document_id: req.body.document_id,
       });
-      res.send({ result: document });
+  
+      if (documentDetail) {
+        res.send({
+          result: documentDetail
+        });
+      } else {
+        res.status(404).send({ statusCode: 404, message: "Document not found" });
+      }
     } catch (error) {
       res.status(500).send({ statusCode: 500, message: error.message });
     }

@@ -5,6 +5,7 @@ const db = require("../../Settings/Database/database");
 module.exports = {
   getAllDocuments: async () => {
     const data = { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } };
+    console.log("data de All documents", data)
     const cursor = await db.procedureExecuteCursor(
       `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DOCUMENTS(:cursor); END;`,
       data
@@ -13,23 +14,27 @@ module.exports = {
   },
   getDetail: async (data) => {
     console.log("data", data);
-    data.c_document = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_pdfs = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_interactions = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_phases = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_geoscopes = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
-    const events = await db.procedureExecuteCursorsArray(
-      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DETAIL(:document_id, :c_document, :c_pdfs, :c_interactions, :c_phases, :c_geoscopes); END;`,
+    data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
+
+    const result = await db.procedureExecuteCursor(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DETAIL(:document_id, :cursor); END;`,
       data
     );
-    return {
-      document: events.c_document,
-      pdfs: events.c_pdfs,
-      interactions: events.c_interactions,
-      phases: result.c_phases,
-      geoscopes: events.c_geoscopes,
-    };
+    const resultSet = result.cursor;
+    console.log("resultSet", resultSet);
+    const documents = resultSet.map((doc) => {
+      console.log("doc", doc);
+      const parsedDocument = JSON.parse(doc['JSON_OBJECT(\'DOCUMENT\'VALUEJSON_OBJECT']);
+      return {
+        ...parsedDocument,
+        GEOSCOPE: parsedDocument.GEOSCOPE || [],
+        INTERACTIONS: parsedDocument.INTERACTIONS || [],
+        PHASES: parsedDocument.PHASES || [],
+      };
+    });
+
+    return documents;
   },
   getSimpleSearch: async (data) => {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
@@ -69,7 +74,7 @@ module.exports = {
     return cursor.cursor;
   },
   postInteractionGraph: async (data) => {
-    console.log(data)
+    console.log(data);
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
     const cursor = await db.procedureExecuteCursor(
