@@ -5,7 +5,7 @@ const  { Filter  } = require('../../Server/middleware/permissions');
 const { checkMaterials } = require('../../Media/media');
 
 router.post('/createDocument', Filter, checkMaterials, Documents.createDocuments);
-
+router.post('/clasification', Filter, Documents.createClasification);
 
 router.get('/getAllDocuments',Filter, Documents.getAllDocuments);
 router.post('/getDetail', Documents.getDetail)

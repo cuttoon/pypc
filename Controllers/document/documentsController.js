@@ -108,4 +108,13 @@ module.exports = {
       res.status(500).send({ statusCode: 500, message: error.message });
     }
   },
+  createClasification: async (req, res, next) => {
+    try {
+      const clasification = await userdb.createClasification(req.body);
+      res.send({result: clasification})
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ statusCode: 500, message: error.message });
+    }
+  }
 };

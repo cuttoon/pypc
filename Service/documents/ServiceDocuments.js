@@ -15,6 +15,7 @@ const parseInteraction = (data, int) => {
   return data.map((ele) => {
     ele.doc_id = int;
     ele.int_id = ele.int_id ? parseInt(ele.int_id) : ele.int_id;
+    return ele;
   });
 };
 
@@ -22,6 +23,7 @@ const parsePhase = (data, pha) => {
   return data.map((ele) => {
     ele.doc_id = pha;
     ele.pha_id = ele.pha_id ? parseInt(ele.pha_id) : ele.pha_id;
+    return ele;
   });
 };
 
@@ -174,14 +176,19 @@ module.exports = {
     return newEvent.ids;
   },
   createClasification: async (data) => {
-    const geo_ = await createGeoscope(parseGeoscope(data.geo, data.doc_id));
-    const int_ = await createInteraction(parseInteraction(data.int, data.doc_id));
-    const pha_ = await createPhases(parsePhase(data.pha, data.doc_id));
+
+    const geoScopeData = data.geoscope ? parseGeoscope(data.geoscope, data.doc_id) : [];
+    const interactionData = data.interaction ? parseInteraction(data.interaction, data.doc_id) : [];
+    const phaseData = data.phases ? parsePhase(data.phases, data.doc_id) : [];
+
+    const geo_ = geoScopeData.length > 0 ? await createGeoscope(geoScopeData) : [];
+    const int_ = interactionData.length > 0 ? await createInteraction(interactionData) : [];
+    const pha_ = phaseData.length > 0 ? await createPhases(phaseData) : [];
 
     return {
       geoscope: geo_,
       interaction: int_,
-      phases: pha_
-    }
+      phases: pha_,
+    };
   }
 };
