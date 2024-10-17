@@ -1,40 +1,41 @@
-const jwt = require('jsonwebtoken');
-const {    TokenDestroy,    ExisToken} = require('./TokenService')
+const jwt = require("jsonwebtoken");
+const { TokenDestroy, ExisToken } = require("./TokenService");
 
 module.exports = (secret) => (req, resp, next) => {
-    const { authorization } = req.headers;
-    if (!authorization) {
-        return next();
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return next();
+  }
+  const [type, token] = authorization.split(" ");
+  if (type.toLowerCase() !== "bearer") {
+    return next();
+  }
+  jwt.verify(token, secret, async (err, decodedToken) => {
+    if (err) {
+      return next(403);
     }
-    const [type, token] = authorization.split(' ');
-    if (type.toLowerCase() !== 'bearer') {
-        return next();
-    }    
-    jwt.verify(token, secret, async(err, decodedToken) => {
-        if (err) {
-            return next(403);
-        }
-        try {    
-            
-           if(ExisToken(decodedToken.id)){
-               req.Token=token;
-               req.user =decodedToken
-               next();
-           }else{
-            resp.status(500).send({ statusCode: 500, message:"Invalid Token" });
-           }
-                                      
-        } catch (err) {
-            resp.status(500).send({ statusCode: 500, message: err.message });
-        }        
-    });
+    try {
+      if (ExisToken(decodedToken.id)) {
+        req.Token = token;
+        req.user = decodedToken;
+        next();
+      } else {
+        resp.status(500).send({ statusCode: 500, message: "Invalid Token" });
+      }
+    } catch (err) {
+      resp.status(500).send({ statusCode: 500, message: err.message });
+    }
+  });
 };
-module.exports.Filter = (req, resp, next) => req.user ? next() : next(401);
-module.exports.Destroy = (req, resp, next) => { 
-     if(TokenDestroy(req.user.id)){
-        resp.send({ status:200 , mesage:"Closed" });
-     }else{
-        resp.send({ status:500 , mesage:"Error token" });
-     }
-    
+module.exports.Filter = (req, resp, next) => {
+  console.log("Entrando en Filter, usuario:", req.user); // <-- Log para depuración
+  req.user ? next() : next(401);
+};
+
+module.exports.Destroy = (req, resp, next) => {
+  if (TokenDestroy(req.user.id)) {
+    resp.send({ status: 200, mesage: "Closed" });
+  } else {
+    resp.send({ status: 500, mesage: "Error token" });
+  }
 };

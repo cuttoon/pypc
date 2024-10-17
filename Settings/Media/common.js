@@ -20,7 +20,7 @@ const deleteFiles = (data) => {
 
 const filesAssingBody = (files, body)=> {
     const data = Object.assign({}, body);
-    data.imagen = files.imagen ? files.imagen[0].filename : null;
+    data.picture = files.picture ? files.picture[0].filename : null;
     return data;
 };
 

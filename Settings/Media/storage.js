@@ -4,8 +4,8 @@ const CustomError = require('../../Service/errors');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        if (file.fieldname === 'imagen') {
-            cb(null, './media/images');
+        if (file.fieldname === 'picture') {
+            cb(null, './media/news');
         } else if (file.fieldname === 'programacion') {
             cb(null, './media/files');
         } else if (file.fieldname === 'material') {
@@ -31,7 +31,7 @@ const fileFilter = (req, file, cb) => {
 
     let extname;
 
-    if (file.fieldname === 'imagen') {
+    if (file.fieldname === 'picture') {
         extname = imageTypes.test(path.extname(file.originalname).toLowerCase());                    
     } else if (file.fieldname === 'programacion') { 
         extname = fileTypes.test(path.extname(file.originalname).toLowerCase());

@@ -2,6 +2,7 @@ const auth = require('./Auth/SeguridadRoute');
 const user = require('./User/UserRoute');
 const common = require('./Common/CommonRoute')
 const documents = require('./Documents/DocumentsRoute')
+const news = require('./News/NewsRoute')
 const root = (app, next) => {
     const pkg = app.get('pkg');
     app.get('/', (req, res) => res.json({ name: pkg.name, version: pkg.version }));
@@ -27,4 +28,5 @@ module.exports = (app, next) => register(app, [
     common,  
     documents,
     root, 
+    news
 ], next);
