@@ -1,6 +1,30 @@
 const { parseJSON, data } = require("jquery");
 const oracledb = require("oracledb");
 const db = require("../../Settings/Database/database");
+const { createGeoscope, createInteraction, createPhases } = require("../clasification/ServiceClasification");
+
+const parseGeoscope = (data, geo) => {
+  return data.map((ele) => {
+    ele.doc_id = geo;
+    ele.geo_id = ele.geo_id ? parseInt(ele.geo_id) : ele.geo_id;
+    return ele;
+  });
+};
+
+const parseInteraction = (data, int) => {
+  return data.map((ele) => {
+    ele.doc_id = int;
+    ele.int_id = ele.int_id ? parseInt(ele.int_id) : ele.int_id;
+  });
+};
+
+const parsePhase = (data, pha) => {
+  return data.map((ele) => {
+    ele.doc_id = pha;
+    ele.pha_id = ele.pha_id ? parseInt(ele.pha_id) : ele.pha_id;
+  });
+};
+
 
 module.exports = {
   getAllDocuments: async () => {
@@ -148,5 +172,16 @@ module.exports = {
       data
     );
     return newEvent.ids;
+  },
+  createClasification: async (data) => {
+    const geo_ = await createGeoscope(parseGeoscope(data.geo, data.doc_id));
+    const int_ = await createInteraction(parseInteraction(data.int, data.doc_id));
+    const pha_ = await createPhases(parsePhase(data.pha, data.doc_id));
+
+    return {
+      geoscope: geo_,
+      interaction: int_,
+      phases: pha_
+    }
   }
 };

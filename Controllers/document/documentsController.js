@@ -74,6 +74,11 @@ module.exports = {
     try {
       console.log("recibiendo datos: ", req.body);
 
+      req.body.categoryid = parseInt(req.body.categoryid);
+      req.body.modelid = parseInt(req.body.modelid);
+      req.body.countryid = parseInt(req.body.countryid);
+      req.body.userid = parseInt(req.body.userid);
+
       req.body.ids =
         req.body.ids == undefined || parseInt(req.body.ids) == 0
           ? 0
@@ -85,8 +90,6 @@ module.exports = {
       req.body.ffin = moment(req.body.ffin, "DD-MM-YYYY", true).isValid()
         ? moment(req.body.ffin, "DD-MM-YYYY").toDate()
         : null;
-
-      req.body.usuario = req.body.usuario;
 
       validateDocuments(req.body);
 

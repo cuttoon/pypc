@@ -4,7 +4,7 @@ const { Documents } = require('../../../Controllers');
 const  { Filter  } = require('../../Server/middleware/permissions');
 const { checkMaterials } = require('../../Media/media');
 
-router.post('createDocument', Filter, checkMaterials, Documents.createDocuments);
+router.post('/createDocument', Filter, checkMaterials, Documents.createDocuments);
 
 
 router.get('/getAllDocuments',Filter, Documents.getAllDocuments);
