@@ -30,7 +30,6 @@ const initialize = () => new Promise((resolve, reject) => {
     app.use('/media', express.static(path.join(path.resolve(), 'media')));
   
     app.use(authMiddleware(secret));
-    // Registrar rutas
     routes(app, (err) => {
         if (err) {
             throw err;

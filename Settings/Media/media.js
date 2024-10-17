@@ -21,7 +21,6 @@ const checkFiles = (req, resp, next)=> {
             }
         } else {
             if (Object.keys(files).length <= 1) {   
-               //(deleteFiles(files);
                 req.body = filesAssingBody(files, reqBody); 
                 return next();
             } else {

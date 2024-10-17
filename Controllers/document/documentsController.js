@@ -25,9 +25,9 @@ module.exports = {
       res.status(500).send({ statusCode: 500, message: error.message });
     }
   },
-  getAdvanceSearch: async (req, res, next) => {
+  postAdvanceSearch: async (req, res, next) => {
     try {
-      const document = await userdb.getAdvanceSearch(req.body);
+      const document = await userdb.postAdvanceSearch(req.body);
       res.send({ result: document });
     } catch (error) {
       res.status(500).send({ statusCode: 500, message: error.message });
@@ -53,6 +53,15 @@ module.exports = {
   postPhaseGraph: async (req, resp, next) => {
     try {
       const document = await userdb.postPhaseGraph(req.body);
+      resp.send({ result: document });
+    } catch (err) {
+      resp.status(500).send({ statusCode: 500, message: err.message });
+    }
+  },
+
+  postGeoscopeGraph: async (req, resp, next) => {
+    try {
+      const document = await userdb.postGeoscopeGraph(req.body);
       resp.send({ result: document });
     } catch (err) {
       resp.status(500).send({ statusCode: 500, message: err.message });

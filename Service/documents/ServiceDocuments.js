@@ -12,25 +12,25 @@ module.exports = {
     return cursor.cursor;
   },
   getDetail: async (data) => {
-    console.log("data", data);
-    data.c_document = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_pdfs = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_interactions = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_phases = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
-    data.c_geoscopes = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
+    data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
-    const events = await db.procedureExecuteCursorsArray(
-      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DETAIL(:document_id, :c_document, :c_pdfs, :c_interactions, :c_phases, :c_geoscopes); END;`,
+    const result = await db.procedureExecuteCursorsArray(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DETAIL(:document_id, :cursor); END;`,
       data
     );
-    return {
-      document: events.c_document,
-      pdfs: events.c_pdfs,
-      interactions: events.c_interactions,
-      phases: result.c_phases,
-      geoscopes: events.c_geoscopes,
-    };
-  },
+
+    const resultSet = result.cursor;
+
+    const documents = resultSet.map((doc) => ({
+      ...doc,
+      PDFS: JSON.parse(doc.PDFS),        
+      INTERACTION: JSON.parse(doc.INTERACTION),
+      PHASES: JSON.parse(doc.PHASES),
+      GEOSCOPE: JSON.parse(doc.GEOSCOPE)
+    }));
+
+    return documents;
+},
   getSimpleSearch: async (data) => {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
@@ -50,14 +50,37 @@ module.exports = {
 
     return documents;
   },
-  getAdvanceSearch: async (data) => {
-    data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
+  postAdvanceSearch: async (data) => {
+    const bindVars = {
+      category: data.category || null,
+      model: data.model || null,
+      country: data.country || null,
+      geoscope: data.geoscope || null,
+      interaction: data.interaction || null,
+      phase: data.phase || null,
+      scope_start: data.scope_start || null,
+      scope_end: data.scope_end || null,
+      cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }, 
+    };
 
-    const cursor = await db.procedureExecuteCursor(
-      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_ADVANCE_SEARCH(:category,:model,:country,:geoscope,:interaction,:phase,:scope_start,:scope_end,:cursor); END;`,
-      data
+    const result = await db.procedureExecuteCursor(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_ADVANCE_SEARCH(
+          :category, :model, :country, :geoscope, :interaction, :phase, 
+          :scope_start, :scope_end, :cursor); 
+       END;`,
+      bindVars
     );
-    return cursor.cursor;
+
+    const resultSet = result.cursor;
+
+    const documents = resultSet.map((doc) => ({
+      ...doc,
+      GEOSCOPE: JSON.parse(doc.GEOSCOPE),
+      INTERACTIONS: JSON.parse(doc.INTERACTIONS),
+      PHASES: JSON.parse(doc.PHASES),
+    }));
+
+    return documents;
   },
   postModelGraph: async (data) => {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
@@ -69,7 +92,7 @@ module.exports = {
     return cursor.cursor;
   },
   postInteractionGraph: async (data) => {
-    console.log(data)
+    console.log(data);
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
     const cursor = await db.procedureExecuteCursor(
@@ -83,6 +106,15 @@ module.exports = {
 
     const cursor = await db.procedureExecuteCursor(
       `BEGIN PG_SPCI_CONSULTA.PA_SPCI_PHASE_GRAPH(:cursor); END;`,
+      data
+    );
+    return cursor.cursor;
+  },
+  postGeoscopeGraph: async (data) => {
+    data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
+
+    const cursor = await db.procedureExecuteCursor(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_GEOSCOPE_GRAPH(:cursor); END;`,
       data
     );
     return cursor.cursor;

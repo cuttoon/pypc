@@ -6,10 +6,11 @@ const  { Filter  } = require('../../Server/middleware/permissions');
 router.get('/getAllDocuments',Filter, Documents.getAllDocuments);
 router.post('/getDetail', Documents.getDetail)
 router.post('/getSimpleSearch', Documents.getSimpleSearch);
-router.post('/getAdvanceSearch', Documents.getAdvanceSearch);
+router.post('/postAdvanceSearch', Documents.postAdvanceSearch);
 router.post('/postModelGraph', Documents.postModelGraph);
 router.post('/postInteractionGraph', Documents.postInteractionGraph);
 router.post('/postPhaseGraph', Documents.postPhaseGraph);
+router.post('/postGeoGraph', Documents.postGeoscopeGraph);
 
 
 module.exports = (app, nextMain) => {

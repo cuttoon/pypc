@@ -31,7 +31,6 @@ module.exports = (secret) => (req, resp, next) => {
 };
 module.exports.Filter = (req, resp, next) => req.user ? next() : next(401);
 module.exports.Destroy = (req, resp, next) => { 
-    //delete Tokens[req.token]
      if(TokenDestroy(req.user.id)){
         resp.send({ status:200 , mesage:"Closed" });
      }else{

@@ -8,8 +8,6 @@ const root = (app, next) => {
     app.all('*', (req, resp, nextAll) => nextAll(404));
     return next();
 };
-
-// eslint-disable-next-line consistent-return
 const register = (app, routes, cb) => {
     if (!routes.length) {
         return cb();

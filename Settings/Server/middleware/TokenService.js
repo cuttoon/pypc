@@ -5,8 +5,8 @@ const myCache = new NodeCache();
 
 TokenSignup = function(payload, secret, expiration) {
   let _Token = jwt.sign(payload, secret, { expiresIn: expiration });
-  myCache.set(payload.id, _Token);  // Almacenar el token usando userId
-  return _Token;  // Asegúrate de retornar el JWT correctamente
+  myCache.set(payload.id, _Token);
+  return _Token;
 }
 
 ExisToken = function(userId){
