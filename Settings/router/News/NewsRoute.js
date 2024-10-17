@@ -4,7 +4,7 @@ const { News } = require("../../../Controllers");
 const { Filter } = require("../../Server/middleware/permissions");
 const { checkFiles } = require("../../Media/media");
 
-router.post("/createNews", checkFiles, News.createNews);
+router.post("/createNews", Filter, checkFiles, News.createNews);
 
 module.exports = (app, nextMain) => {
   console.log("Rutas de noticias cargadas");

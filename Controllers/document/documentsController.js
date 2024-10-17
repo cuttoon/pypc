@@ -1,4 +1,7 @@
 const userdb = require("../../Service/documents/ServiceDocuments");
+const { validateDocuments } = require('../../Models');
+const moment = require("moment");
+const CustomError = require("../../Service/errors");
 
 module.exports = {
   getAllDocuments: async (req, res, next) => {
@@ -65,6 +68,41 @@ module.exports = {
       resp.send({ result: document });
     } catch (err) {
       resp.status(500).send({ statusCode: 500, message: err.message });
+    }
+  },
+  createDocuments: async (req, res, next) => {
+    try {
+      console.log("recibiendo datos: ", req.body);
+
+      req.body.ids =
+        req.body.ids == undefined || parseInt(req.body.ids) == 0
+          ? 0
+          : parseInt(req.body.ids);
+
+      req.body.fini = moment(req.body.fini, "DD-MM-YYYY", true).isValid()
+        ? moment(req.body.fini, "DD-MM-YYYY").toDate()
+        : null;
+      req.body.ffin = moment(req.body.ffin, "DD-MM-YYYY", true).isValid()
+        ? moment(req.body.ffin, "DD-MM-YYYY").toDate()
+        : null;
+
+      req.body.usuario = req.body.usuario;
+
+      validateDocuments(req.body);
+
+      const dataEvent = Object.assign({}, req.body);
+      console.log("dataEvent", dataEvent);
+      let result = null;
+      if (req.body.ids == 0) {
+        result = await userdb.createDocument(dataEvent);
+      } else {
+        console.log("se actualizara el documento")
+      }
+
+      res.send({ result });
+    } catch (error) {
+      console.log("Error al crear la auditoria", error.message);
+      res.status(500).send({ statusCode: 500, message: error.message });
     }
   },
 };

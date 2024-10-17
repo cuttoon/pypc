@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Documents } = require('../../../Controllers');
 const  { Filter  } = require('../../Server/middleware/permissions');
+const { checkMaterials } = require('../../Media/media');
+
+router.post('createDocument', Filter, checkMaterials, Documents.createDocuments);
+
 
 router.get('/getAllDocuments',Filter, Documents.getAllDocuments);
 router.post('/getDetail', Documents.getDetail)

@@ -1,4 +1,4 @@
-const { parseJSON } = require("jquery");
+const { parseJSON, data } = require("jquery");
 const oracledb = require("oracledb");
 const db = require("../../Settings/Database/database");
 
@@ -127,4 +127,26 @@ module.exports = {
     );
     return cursor.cursor;
   },
+  createDocument: async (data) => {
+    data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
+    data.material = data.material ? data.material : null;
+    data.link = { val: data.link ? data.link : null };
+    const newEvent = await db.procedureExecute(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_INSERT_DOCUMENTS(
+            :title,
+            :summary,
+            :categoryid,
+            :modelid,
+            :countryid,
+            :fini,
+            :ffin,
+            :link,
+            :userid,
+            :material,
+            :ids            
+            ); END;`,
+      data
+    );
+    return newEvent.ids;
+  }
 };
