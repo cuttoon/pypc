@@ -14,23 +14,31 @@ module.exports = {
   getDetail: async (data) => {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
-    const result = await db.procedureExecuteCursorsArray(
+    const result = await db.procedureExecuteCursor(
       `BEGIN PG_SPCI_CONSULTA.PA_SPCI_DETAIL(:document_id, :cursor); END;`,
       data
     );
 
     const resultSet = result.cursor;
 
-    const documents = resultSet.map((doc) => ({
-      ...doc,
-      PDFS: JSON.parse(doc.PDFS),        
-      INTERACTION: JSON.parse(doc.INTERACTION),
-      PHASES: JSON.parse(doc.PHASES),
-      GEOSCOPE: JSON.parse(doc.GEOSCOPE)
-    }));
+    const documents = resultSet.map((doc) => {
+      const jsonDocument = JSON.parse(
+        doc[
+          "JSON_OBJECT('DOCUMENT'VALUEJSON_OBJECT('ID_DOC'VALUED.NDOC_ID,'TITLE'VALUED.CDOC_TITLE,'SUMMARY'VALUED.CDOC_SUMMARY,'ID_CATEGORY'VALUED.NDOC_IDCATEGORY,'CATEGORY'VALUEC.CCAT_CATNAME,'ID_MODEL'VALUED.NDOC_IDMODEL,'MODEL'VALUEM.CMOD_NAME,'ID_COUNTRY'VAL"
+        ]
+      );
+
+      return {
+        ...jsonDocument,
+        PDFS: jsonDocument.PDFS,
+        GEOSCOPE: jsonDocument.GEOSCOPE,
+        INTERACTION: jsonDocument.INTERACTION,
+        PHASES: jsonDocument.PHASES,
+      };
+    });
 
     return documents;
-},
+  },
   getSimpleSearch: async (data) => {
     data.cursor = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
 
@@ -60,7 +68,7 @@ module.exports = {
       phase: data.phase || null,
       scope_start: data.scope_start || null,
       scope_end: data.scope_end || null,
-      cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }, 
+      cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
     };
 
     const result = await db.procedureExecuteCursor(
