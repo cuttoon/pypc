@@ -1,5 +1,5 @@
 const userdb = require("../../Service/documents/ServiceDocuments");
-const { validateDocuments } = require('../../Models');
+const { validateDocuments } = require("../../Models");
 const moment = require("moment");
 const CustomError = require("../../Service/errors");
 
@@ -99,7 +99,7 @@ module.exports = {
       if (req.body.ids == 0) {
         result = await userdb.createDocument(dataEvent);
       } else {
-        console.log("se actualizara el documento")
+        console.log("se actualizara el documento");
       }
 
       res.send({ result });
@@ -111,10 +111,39 @@ module.exports = {
   createClasification: async (req, res, next) => {
     try {
       const clasification = await userdb.createClasification(req.body);
-      res.send({result: clasification})
+      res.send({ result: clasification });
     } catch (error) {
       console.log(error);
       return res.status(500).send({ statusCode: 500, message: error.message });
     }
-  }
+  },
+
+  insertPDF: async (req, res, next) => {
+    try {
+      const { doc_id, pdffiles } = req.body;
+
+      req.body.ids =
+        req.body.ids == undefined || parseInt(req.body.ids) == 0
+          ? 0
+          : parseInt(req.body.ids);
+
+      const pdfData = (pdffiles || []).map((pdffile) => ({
+        doc_id: Number(doc_id),
+        pdf_file: pdffile.toString(),
+      }));
+
+      console.log("pdfData", pdfData);
+
+      const result = await userdb.insertPDF(pdfData);
+      res.status(200).json({
+        message: `PDFs agregados correctamente para el documento con ID: ${doc_id}`,
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error al insertar PDFs:", error);
+      return res
+        .status(500)
+        .json({ message: "Error en el servidor.", error: error.message });
+    }
+  },
 };

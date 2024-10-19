@@ -190,5 +190,25 @@ module.exports = {
       interaction: int_,
       phases: pha_,
     };
+  },
+  insertPDF: async (data) => {
+    const options = {
+      autoCommit: true,
+      batchErrors: true,
+      bindDefs: {
+        doc_id: { type: oracledb.NUMBER },
+        pdf_file: { type: oracledb.STRING, maxSize: 255 },
+        ids: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT },
+      },
+    };
+
+    const pdfs = await db.manyExecute(
+      `INSERT INTO SPCI_PDFS (npdf_docid, npdf_pdffile) 
+       VALUES (:doc_id, :pdf_file) RETURNING npdf_id INTO :ids`,
+      data,
+      options
+    );
+  
+    return pdfs;
   }
 };

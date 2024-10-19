@@ -12,6 +12,8 @@ const storage = multer.diskStorage({
             cb(null, './media/materials');
         } else if(file.fieldname === 'report' || file.fieldname === 'archivo'){
             cb(null,'./media/reports');
+        } else if (file.fieldname === 'pdffiles') {
+            cb(null, './media/pdfs');
         }
 
     },
@@ -39,6 +41,8 @@ const fileFilter = (req, file, cb) => {
         extname = materialTypes.test(path.extname(file.originalname).toLowerCase());
     } else if (file.fieldname === 'report' || file.fieldname === 'archivo') {
         extname = reportTypes.test(path.extname(file.originalname).toLowerCase());
+    } else if (file.fieldname === 'pdffiles') { 
+        extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     }
     
     if (extname) {
@@ -49,7 +53,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 1 }, fileFilter });
+const upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 10 }, fileFilter });
 
 module.exports = upload;
 

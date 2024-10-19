@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { Documents } = require('../../../Controllers');
 const  { Filter  } = require('../../Server/middleware/permissions');
-const { checkMaterials } = require('../../Media/media');
+const { checkMaterials, checkPDFs } = require('../../Media/media');
 
 router.post('/createDocument', Filter, checkMaterials, Documents.createDocuments);
 router.post('/clasification', Filter, Documents.createClasification);
+router.post('/insertPDF', Filter, checkPDFs, Documents.insertPDF);
 
 router.get('/getAllDocuments',Filter, Documents.getAllDocuments);
 router.post('/getDetail', Documents.getDetail)

@@ -4,9 +4,9 @@ const db = require("../../Settings/Database/database");
 module.exports = {
   createNews: async (data) => {
     try {
-      console.log("data.ids", data.ids);
+      console.log("recibiendo data", data);
       data.ids = { type: oracledb.NUMBER, dir: oracledb.BIND_OUT };
-
+      data.picture = data.picture ? data.picture : null;
       const result = await db.procedureExecute(
         `BEGIN PG_SPCI_CONSULTA.PA_SPCI_INSERT_NEWS(
               :ids,
