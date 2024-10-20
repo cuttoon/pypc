@@ -9,6 +9,14 @@ module.exports = {
       res.status(500).send({ statusCode: 500, message: error.message });
     }
   },
+  getAllCountries: async(req, res, next) => {
+    try {
+      const country = await userdb.getAllCountries();
+      res.send({ result: country })
+    } catch (error) {
+      res.status(500).send({ statusCode: 500, message: error.message });
+    }
+  },
   getAllCategory: async(req, res, next) => {
     try {
       const category = await userdb.getAllCategory();

@@ -3,6 +3,7 @@ const router = express.Router();
 const { Common } = require('../../../Controllers');
 
 router.get('/getAllSAI', Common.getAllSAI);
+router.get('/getAllCountries', Common.getAllCountries);
 router.get('/getAllCategory', Common.getAllCategory);
 router.get('/getAllModels', Common.getAllModels);
 router.get('/getAllGeoscope', Common.getAllGeoscope);

@@ -4,7 +4,7 @@ const CustomError = require("../../Service/errors");
 
 const {
   deleteFiles,
-  filesAssingBody,
+  picturesAssingBody,
   materialsAssingBody,
   reportsAssingBody,
   pdfsAssignBody
@@ -12,14 +12,14 @@ const {
 
 const media = upload.fields([{ name: "picture", maxCount: 1 }]);
 
-const checkFiles = (req, resp, next) => {
+const checkPictures = (req, resp, next) => {
   media(req, resp, function (err) {
     console.log("Archivos recibidos:", req.files);
     const files = JSON.parse(JSON.stringify(req.files));
     const reqBody = JSON.parse(JSON.stringify(req.body));
 
     if (err) {
-      console.log("Error en checkFiles:", err);
+      console.log("Error en checkPictures:", err);
       deleteFiles(files);
       if (err instanceof CustomError) {
         return next(err);
@@ -34,10 +34,10 @@ const checkFiles = (req, resp, next) => {
       }
     } else {
       if (Object.keys(files).length <= 1) {
-        req.body = filesAssingBody(files, reqBody);
+        req.body = picturesAssingBody(files, reqBody);
         return next();
       } else {
-        req.body = filesAssingBody(files, reqBody);
+        req.body = picturesAssingBody(files, reqBody);
         return next();
       }
     }
@@ -103,4 +103,4 @@ const checkPDFs = (req, res, next) => {
   });
 };
 
-module.exports = { checkFiles, checkMaterials, checkreports, checkPDFs };
+module.exports = { checkPictures, checkMaterials, checkreports, checkPDFs };

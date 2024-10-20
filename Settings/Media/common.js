@@ -18,7 +18,7 @@ const deleteFiles = (data) => {
   }
 };
 
-const filesAssingBody = (files, body) => {
+const picturesAssingBody = (files, body) => {
   const data = Object.assign({}, body);
   data.picture = files.picture ? files.picture[0].filename : null;
   return data;
@@ -46,7 +46,7 @@ const pdfsAssignBody = (files, body) => {
 
 module.exports = {
   deleteFiles,
-  filesAssingBody,
+  picturesAssingBody,
   materialsAssingBody,
   reportsAssingBody,
   pdfsAssignBody

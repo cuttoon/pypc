@@ -10,6 +10,14 @@ module.exports = {
     );
     return cursor.cursor;
   },
+  getAllCountries: async () => {
+    const data = { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } };
+    const cursor = await db.procedureExecuteCursor(
+      `BEGIN PG_SPCI_CONSULTA.PA_SPCI_COUNTRIES(:cursor); END;`,
+      data
+    );
+    return cursor.cursor;
+  },
   getAllCategory: async () => {
     const data = { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } };
     const cursor = await db.procedureExecuteCursor(

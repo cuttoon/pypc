@@ -5,7 +5,7 @@ const CustomError = require('../../Service/errors');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         if (file.fieldname === 'picture') {
-            cb(null, './media/news');
+            cb(null, './media/pictures');
         } else if (file.fieldname === 'programacion') {
             cb(null, './media/files');
         } else if (file.fieldname === 'material') {
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {  
-    const imageTypes = /jpeg|jpg|png|gif|pdf|zip/;
+    const pictureTypes = /jpeg|jpg|png|gif|pdf|zip/;
     const fileTypes = /pdf/;
     const materialTypes = /pdf|zip|rar/;
     const reportTypes = /jpeg|jpg|png|gif|pdf|zip|rar/;
@@ -34,7 +34,7 @@ const fileFilter = (req, file, cb) => {
     let extname;
 
     if (file.fieldname === 'picture') {
-        extname = imageTypes.test(path.extname(file.originalname).toLowerCase());                    
+        extname = pictureTypes.test(path.extname(file.originalname).toLowerCase());                    
     } else if (file.fieldname === 'programacion') { 
         extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     } else if (file.fieldname === 'material') {
