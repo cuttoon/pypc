@@ -32,7 +32,7 @@ const materialsAssingBody = (files, body) => {
 
 const reportsAssingBody = (files, body) => {
   const data = Object.assign({}, body);
-  data.report = files.report ? files.report[0].filename : null;
+  data.filepath = files.filepath ? files.filepath[0].filename : null;
   return data;
 };
 

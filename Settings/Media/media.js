@@ -63,7 +63,7 @@ const checkMaterials = (req, resp, next) => {
   });
 };
 
-const reports = upload.fields([{ name: "report", maxCount: 1 }]);
+const reports = upload.fields([{ name: "filepath", maxCount: 1 }]);
 
 const checkreports = (req, resp, next) => {
   reports(req, resp, function (err) {

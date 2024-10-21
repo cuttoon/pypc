@@ -10,8 +10,8 @@ const storage = multer.diskStorage({
             cb(null, './media/files');
         } else if (file.fieldname === 'material') {
             cb(null, './media/materials');
-        } else if(file.fieldname === 'report' || file.fieldname === 'archivo'){
-            cb(null,'./media/reports');
+        } else if(file.fieldname === 'filepath' || file.fieldname === 'archivo'){
+            cb(null,'./media/news');
         } else if (file.fieldname === 'pdffiles') {
             cb(null, './media/pdfs');
         }
@@ -39,7 +39,7 @@ const fileFilter = (req, file, cb) => {
         extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     } else if (file.fieldname === 'material') {
         extname = materialTypes.test(path.extname(file.originalname).toLowerCase());
-    } else if (file.fieldname === 'report' || file.fieldname === 'archivo') {
+    } else if (file.fieldname === 'filepath' || file.fieldname === 'archivo') {
         extname = reportTypes.test(path.extname(file.originalname).toLowerCase());
     } else if (file.fieldname === 'pdffiles') { 
         extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
